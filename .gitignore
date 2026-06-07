@@ -56,3 +56,7 @@ tsconfig.tsbuildinfo
 
 # Logs and runtime files
 *.log
+
+# SSH Keys
+hello
+hello.pub
