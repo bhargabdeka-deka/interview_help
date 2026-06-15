@@ -1,0 +1,22 @@
+sequenceDiagram
+    autonumber
+    actor Alice as Interviewer
+    actor Bob as Candidate
+    participant WS as WebSocket Hub (Go)
+
+    Alice->>WS: Connects to Room (/ws/:roomId)
+    WS-->>Alice: Returns list of existing users ("room-users")
+    Bob->>WS: Connects to Room (/ws/:roomId)
+    WS-->>Alice: Broadcasts "peer-joined" (Bob's UserID)
+    WS-->>Bob: Returns room users list (Alice's UserID)
+    Note over Alice,Bob: WebRTC Initiation
+    Alice->>WS: Send WebRTC Offer (Target: Bob)
+    WS->>Bob: Forward Offer
+    Bob->>WS: Send WebRTC Answer (Target: Alice)
+    WS->>Alice: Forward Answer
+    Note over Alice,Bob: Exchange ICE Candidates
+    Alice->>WS: Send Ice Candidate
+    WS->>Bob: Forward Ice Candidate
+    Bob->>WS: Send Ice Candidate
+    WS->>Alice: Forward Ice Candidate
+    Note over Alice,Bob: Direct P2P Media Stream Established

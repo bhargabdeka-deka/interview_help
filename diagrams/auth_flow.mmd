@@ -1,0 +1,19 @@
+sequenceDiagram
+    autonumber
+    actor User as Client
+    participant API as Auth API
+    participant DB as PostgreSQL
+
+    User->>API: POST /api/auth/login {email, password}
+    API->>DB: Query User by Email
+    DB-->>API: Return User Record & Hashed Password
+    API->>API: Verify bcrypt(password)
+    API->>API: Generate Signed JWT Token
+    API-->>User: HTTP 200 {token, user_details}
+    
+    Note over User,API: Subsequent Authenticated Requests
+    User->>API: GET /api/interviews (Header: Bearer Token)
+    API->>API: Validate JWT Signature
+    API->>DB: Fetch User's Interviews
+    DB-->>API: Return Records
+    API-->>User: HTTP 200 JSON Data

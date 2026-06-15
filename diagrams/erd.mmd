@@ -1,0 +1,54 @@
+erDiagram
+    USERS {
+        string id PK
+        string email UK
+        string name
+        string password
+        string role
+        string avatar
+        timestamp created_at
+        timestamp updated_at
+    }
+    INTERVIEWS {
+        string id PK
+        string title
+        string description
+        timestamp scheduled_at
+        int duration
+        string room_id
+        string host_id FK
+        string candidate_id FK
+        string status
+        timestamp created_at
+        timestamp updated_at
+    }
+    INTERVIEW_ROOMS {
+        string id PK
+        string interview_id FK
+        string password
+        string rtc_token
+        timestamp created_at
+        timestamp updated_at
+    }
+    FEEDBACKS {
+        string id PK
+        string interview_id FK
+        int rating
+        string comment
+        timestamp created_at
+        timestamp updated_at
+    }
+    CODE_SESSIONS {
+        string id PK
+        string interview_id FK
+        string language
+        string code
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    USERS ||--o{ INTERVIEWS : "hosts"
+    USERS ||--o{ INTERVIEWS : "attends"
+    INTERVIEWS ||--|| INTERVIEW_ROOMS : "contains"
+    INTERVIEWS ||--|| FEEDBACKS : "has"
+    INTERVIEWS ||--|| CODE_SESSIONS : "stores"

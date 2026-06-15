@@ -1,0 +1,16 @@
+graph TD
+    subgraph Host OS [Host Operating System]
+        subgraph Docker Engine [Docker Compose Network]
+            postgres[Container: interviewos_postgres]
+            redis[Container: interviewos_redis]
+            piston[Container: interviewos_piston]
+            backend[Container: interviewos_backend]
+            frontend[Container: interviewos_frontend]
+        end
+    end
+
+    User([Interviewer / Candidate]) -->|Port 3000| frontend
+    frontend -->|Port 8080| backend
+    backend -->|Port 5432| postgres
+    backend -->|Port 6379| redis
+    backend -->|Port 2000| piston
