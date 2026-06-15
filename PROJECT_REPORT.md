@@ -264,3 +264,88 @@ graph TD
 2. **Access Control**: Handlers utilize JWT authorization parsed from HTTP Bearer headers to enforce database-level access checks (e.g., Candidates cannot view interviewer feedback notes).
 3. **Execution Sandbox**: Multi-language support runs in containerized environments with memory and CPU boundaries to prevent denial-of-service (DoS) loops or host compromise.
 4. **WebSocket Mutex Locking**: Room creation and active client registration use synchronization mutexes (`sync.Mutex`) to prevent data race conditions on simultaneous disconnects or connects.
+
+---
+
+## 8. Authentication & Authorization Flow (JWT)
+
+This sequence illustrates the stateless authentication flow used to secure API endpoints across the platform.
+
+<details open>
+<summary>View Diagram</summary>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Client
+    participant API as Auth API
+    participant DB as PostgreSQL
+
+    User->>API: POST /api/auth/login {email, password}
+    API->>DB: Query User by Email
+    DB-->>API: Return User Record & Hashed Password
+    API->>API: Verify bcrypt(password)
+    API->>API: Generate Signed JWT Token
+    API-->>User: HTTP 200 {token, user_details}
+    
+    Note over User,API: Subsequent Authenticated Requests
+    User->>API: GET /api/interviews (Header: Bearer Token)
+    API->>API: Validate JWT Signature
+    API->>DB: Fetch User's Interviews
+    DB-->>API: Return Records
+    API-->>User: HTTP 200 JSON Data
+```
+
+</details>
+
+---
+
+## 9. Frontend Component Architecture
+
+The Next.js frontend is heavily modularized. Complex states in the interview room are managed via Zustand to prevent unnecessary re-renders of the video and code panels.
+
+<details open>
+<summary>View Diagram</summary>
+
+```mermaid
+graph TD
+    Root[Next.js App Router] --> DashboardPage[Dashboard Page]
+    Root --> InterviewPage[Interview Room Page]
+    
+    DashboardPage --> SchedMod[Scheduling Modal]
+    DashboardPage --> HistList[History List]
+    DashboardPage --> Stats[Analytics Stats]
+    
+    InterviewPage --> RoomProvider[Zustand Room State]
+    RoomProvider --> VideoPanel[WebRTC Video Grid]
+    RoomProvider --> EditorPanel[Monaco Code Editor]
+    RoomProvider --> ChatPanel[WebSocket Chat]
+    RoomProvider --> Controls[Media Controls]
+    
+    EditorPanel --> PistonAPI[Piston Execution API]
+    VideoPanel --> SimplePeer[Simple-Peer WebRTC Engine]
+```
+
+</details>
+
+---
+
+## 10. Interview Lifecycle State Machine
+
+The state diagram below illustrates the life cycle of an interview record within the system, tracking its transition from scheduled to fully evaluated.
+
+<details open>
+<summary>View Diagram</summary>
+
+```mermaid
+stateDiagram-v2
+    [*] --> Scheduled: HR Creates Interview
+    Scheduled --> Active: Host Joins Room
+    Active --> Ongoing: Candidate Joins Room
+    Ongoing --> Completed: Host Ends Interview
+    Completed --> Evaluated: Host Submits Feedback
+    Evaluated --> [*]
+```
+
+</details>
+
