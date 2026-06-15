@@ -7,6 +7,7 @@ import (
 
 	"interviewos/internal/db"
 	"interviewos/internal/models"
+	"interviewos/internal/utils"
 
 	"github.com/gofiber/websocket/v2"
 )
@@ -53,14 +54,49 @@ type WebSocketMessage struct {
 	Users      interface{} `json:"users,omitempty"`
 }
 
-// WebSocketHandler manages WebSocket lifecycles
+// WebSocketHandler manages WebSocket lifecycles with authentication
 func WebSocketHandler(c *websocket.Conn) {
 	roomId := c.Params("roomId")
-	userId := c.Query("userId")
-	userName := c.Query("name")
+	token := c.Query("token")
 
-	if roomId == "" || userId == "" {
-		log.Println("WS: Missing roomId or userId")
+	// SECURITY: Validate JWT token
+	if token == "" {
+		log.Println("WS: Missing authentication token")
+		c.WriteMessage(websocket.TextMessage, []byte(`{"error":"missing token"}`))
+		c.Close()
+		return
+	}
+
+	claims, err := utils.VerifyToken(token)
+	if err != nil {
+		log.Printf("WS: Invalid token: %v", err)
+		c.WriteMessage(websocket.TextMessage, []byte(`{"error":"invalid token"}`))
+		c.Close()
+		return
+	}
+
+	userId, ok := claims["id"].(string)
+	if !ok {
+		log.Println("WS: Invalid token claims")
+		c.WriteMessage(websocket.TextMessage, []byte(`{"error":"invalid claims"}`))
+		c.Close()
+		return
+	}
+
+	userName, _ := claims["name"].(string)
+
+	if roomId == "" {
+		log.Println("WS: Missing roomId")
+		c.WriteMessage(websocket.TextMessage, []byte(`{"error":"missing roomId"}`))
+		c.Close()
+		return
+	}
+
+	// SECURITY: Verify user has access to this interview room
+	var interview models.Interview
+	if err := db.DB.Where("id = ? AND (host_id = ? OR candidate_id = ?)", roomId, userId, userId).First(&interview).Error; err != nil {
+		log.Printf("WS: User %s not authorized for room %s", userId, roomId)
+		c.WriteMessage(websocket.TextMessage, []byte(`{"error":"not authorized"}`))
 		c.Close()
 		return
 	}

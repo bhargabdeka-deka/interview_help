@@ -113,3 +113,101 @@ func GetFeedback(c *fiber.Ctx) error {
 
 	return c.JSON(feedback)
 }
+
+// UpdateEvaluation updates interview status and saves evaluation feedback
+func UpdateEvaluation(c *fiber.Ctx) error {
+	interviewID := c.Params("id")
+	claims := c.Locals("user").(map[string]interface{})
+	userID := claims["id"].(string)
+
+	type EvaluationRequest struct {
+		Status  string `json:"status"`
+		Rating  int    `json:"rating"`
+		Comment string `json:"comment"`
+	}
+
+	var req EvaluationRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "invalid request body",
+		})
+	}
+
+	// Validate status
+	validStatuses := map[string]bool{
+		"scheduled":   true,
+		"in-progress": true,
+		"completed":   true,
+		"cancelled":   true,
+	}
+	if !validStatuses[req.Status] {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "invalid status. Must be: scheduled, in-progress, completed, or cancelled",
+		})
+	}
+
+	// Validate rating
+	if req.Rating < 0 || req.Rating > 5 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "rating must be between 0 and 5",
+		})
+	}
+
+	// Verify interview exists and user is host
+	var interview models.Interview
+	if err := db.DB.First(&interview, "id = ?", interviewID).Error; err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "interview not found",
+		})
+	}
+
+	if interview.HostID != userID {
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"message": "only the interviewer can submit evaluation",
+		})
+	}
+
+	// Update interview status
+	if err := db.DB.Model(&interview).Update("status", req.Status).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "failed to update interview status",
+		})
+	}
+
+	// Save feedback if rating provided
+	if req.Rating > 0 {
+		feedback := models.Feedback{
+			ID:          uuid.New().String(),
+			InterviewID: interviewID,
+			Rating:      req.Rating,
+			Comment:     req.Comment,
+		}
+
+		// Check if feedback exists
+		var existing models.Feedback
+		err := db.DB.Where("interview_id = ?", interviewID).First(&existing).Error
+		if err == nil {
+			// Update existing
+			existing.Rating = req.Rating
+			existing.Comment = req.Comment
+			if err := db.DB.Save(&existing).Error; err != nil {
+				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+					"message": "failed to update feedback",
+				})
+			}
+		} else {
+			// Create new
+			if err := db.DB.Create(&feedback).Error; err != nil {
+				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+					"message": "failed to save feedback",
+				})
+			}
+		}
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"message": "evaluation submitted successfully",
+		"interview": interview,
+	})
+}

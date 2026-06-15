@@ -33,15 +33,3 @@ func AuthMiddleware(c *fiber.Ctx) error {
 	c.Locals("user", map[string]interface{}(claims))
 	return c.Next()
 }
-
-func CORSMiddleware(c *fiber.Ctx) error {
-	c.Set("Access-Control-Allow-Origin", "*")
-	c.Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-	c.Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
-	if c.Method() == "OPTIONS" {
-		return c.SendStatus(fiber.StatusOK)
-	}
-
-	return c.Next()
-}

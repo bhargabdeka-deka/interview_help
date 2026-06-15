@@ -17,6 +17,7 @@ type CreateInterviewRequest struct {
 	ScheduledAt time.Time `json:"scheduledAt"`
 	Duration    int       `json:"duration"`
 	CandidateID string    `json:"candidateId"`
+	Type        string    `json:"type"`
 }
 
 func GetInterviews(c *fiber.Ctx) error {
@@ -96,6 +97,7 @@ func CreateInterview(c *fiber.Ctx) error {
 		HostID:      userId,
 		CandidateID: candidate.ID,
 		Status:      "scheduled",
+		Type:        func() string { if req.Type != "" { return req.Type }; return "coding" }(),
 	}
 
 	if err := db.DB.Create(interview).Error; err != nil {
@@ -154,6 +156,9 @@ func UpdateInterview(c *fiber.Ctx) error {
 	interview.Description = req.Description
 	interview.ScheduledAt = req.ScheduledAt
 	interview.Duration = req.Duration
+	if req.Type != "" {
+		interview.Type = req.Type
+	}
 
 	if err := db.DB.Save(&interview).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

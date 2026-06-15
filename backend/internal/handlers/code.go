@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"interviewos/internal/db"
+	"interviewos/internal/models"
 )
 
 type ExecutionRequest struct {
@@ -63,11 +65,28 @@ func mapLanguage(monacoLang string) (string, string) {
 
 // RunCode proxies the execution request to the Piston container sandbox
 func RunCode(c *fiber.Ctx) error {
+	id := c.Params("id")
 	var req ExecutionRequest
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "invalid request body",
+			"details": err.Error(),
 		})
+	}
+
+	// Basic validation
+	if req.Code == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "code cannot be empty"})
+	}
+
+	// Load interview and ensure it's a coding interview
+	var interview models.Interview
+	if err := db.DB.First(&interview, "id = ?", id).Error; err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"message": "interview not found"})
+	}
+
+	if interview.Type != "coding" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "execution not allowed for non-coding interviews", "type": interview.Type})
 	}
 
 	pistonLang, version := mapLanguage(req.Language)
@@ -75,9 +94,7 @@ func RunCode(c *fiber.Ctx) error {
 	pistonReq := PistonExecuteRequest{
 		Language: pistonLang,
 		Version:  version,
-		Files: []PistonFile{
-			{Content: req.Code},
-		},
+		Files: []PistonFile{{Content: req.Code}},
 	}
 
 	jsonData, err := json.Marshal(pistonReq)
@@ -87,21 +104,29 @@ func RunCode(c *fiber.Ctx) error {
 		})
 	}
 
-	// Make call to Piston API execution endpoint
-	resp, err := http.Post("http://piston:2000/api/v2/execute", "application/json", bytes.NewBuffer(jsonData))
+	// Make call to Piston API execution endpoint with timeout
+	client := &http.Client{Timeout: 30 * time.Second}
+	resp, err := client.Post("http://piston:2000/api/v2/execute", "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
+		log.Printf("[RunCode] piston request failed: %v", err)
 		return c.Status(fiber.StatusServiceUnavailable).JSON(fiber.Map{
 			"message": "code execution engine is unavailable",
+			"details": err.Error(),
 		})
 	}
 	defer resp.Body.Close()
 
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
+		log.Printf("[RunCode] failed to read piston response: %v", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": "failed to read sandbox output",
+			"details": err.Error(),
 		})
 	}
+
+	// Log raw piston response for debugging
+	log.Printf("[RunCode] piston status=%d body=%s", resp.StatusCode, string(bodyBytes))
 
 	if resp.StatusCode != http.StatusOK {
 		return c.Status(resp.StatusCode).JSON(fiber.Map{
@@ -112,8 +137,10 @@ func RunCode(c *fiber.Ctx) error {
 
 	var pistonResp PistonExecuteResponse
 	if err := json.Unmarshal(bodyBytes, &pistonResp); err != nil {
+		log.Printf("[RunCode] failed to decode piston response: %v", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": "failed to decode execution results",
+			"details": err.Error(),
 		})
 	}
 
