@@ -1,606 +1,507 @@
 # InterviewOS
 
-Lightweight interview platform (frontend: Next.js, backend: Go/Fiber).
+> A comprehensive interview platform with real-time video, collaborative coding, and seamless scheduling.
 
-This repository contains the InterviewOS frontend and backend and a Docker Compose setup to run everything locally.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/badge/node.js-18+-green.svg)](https://nodejs.org/)
+[![Go](https://img.shields.io/badge/go-1.21+-blue.svg)](https://golang.org/)
+[![Docker](https://img.shields.io/badge/docker-supported-blue.svg)](https://www.docker.com/)
 
-**Contents**
-- `frontend/` — Next.js 14 (TypeScript) app
-- `backend/` — Go (Fiber) API server
-- `docker-compose.yml` — development compose stack
-
-## Prerequisites
-
-- Docker & Docker Compose (recommended)
-- Or: Go 1.21+, Node 18+, npm
-
-## Quick (recommended) — Run with Docker Compose
-
-1. Copy or set required environment variables (see `docker-compose.yml` and `backend/.env.example` if present).
-2. From repository root run:
-
-```bash
-docker-compose up --build
-```
-
-The frontend will be available at http://localhost:3000 and the backend at http://localhost:8080 (see compose file for ports).
-
-Stop the stack with:
-
-```bash
-docker-compose down
-```
-
-## Manual (no Docker)
-
-Backend (Go):
-
-1. Create a `.env` file in `backend/` with the required variables (example keys shown below).
-2. From `backend/`:
-
-```bash
-# install modules
-cd backend
-go mod download
-# run
-go run main.go
-```
-
-Frontend (Next.js):
-
-1. From `frontend/` install deps and start:
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-2. Open http://localhost:3000
-
-## Environment variables (examples)
-
-Backend (`backend/.env`):
-
-```
-DATABASE_URL=postgres://user:pass@localhost:5432/interviewos
-REDIS_URL=redis://localhost:6379
-JWT_SECRET=your_jwt_secret
-OPENAI_API_KEY=your_openai_key
-PORT=8080
-ENV=development
-```
-
-Frontend (`frontend/.env.local` or your environment):
-
-```
-NEXT_PUBLIC_API_URL=http://localhost:8080
-NEXT_PUBLIC_WS_URL=ws://localhost:8080
-```
-
-## Database migrations
-
-Migrations are in `backend/migrations/`. Run your preferred migration tool or run the SQL files against your Postgres instance before starting the backend.
-
-## Cleaning before publishing
-
-This repo already includes a `.gitignore`. Remove local-only files (`node_modules`, build outputs, `.env`) before pushing to GitHub. Use the provided `.gitignore` patterns.
-
-## Troubleshooting
-
-- If ports are in use, change them in `docker-compose.yml`.
-- Check backend health: `http://localhost:8080/health`
-- Check Docker Compose logs:
-
-```bash
-docker-compose logs -f
-```
-
-## Contributing
-
-1. Fork the repo and create a branch for your feature.
-2. Open a pull request with a clear description and screenshots if applicable.
-
-## License
-
-See [LICENSE](LICENSE) for licensing information.
-
----
-If you want, I can also:
-- add a `backend/.env.example` file,
-- update `frontend/README.md` with simplified start steps, or
-- commit and create a GitHub repo and push for you (you will need to provide the remote URL).
-
-# InterviewOS
-
-A browser-based interview platform enabling recruiters, interviewers, and candidates to conduct secure and collaborative interviews with scheduling, WebRTC video/audio communication, and real-time code collaboration.
+InterviewOS is a modern interview platform that enables recruiters and candidates to conduct secure, collaborative interviews with real-time video communication, live code editing, and comprehensive scheduling capabilities.
 
 ## 🚀 Quick Start
 
-Get started in 2 minutes with Docker Compose:
+**Get up and running in 2 minutes with Docker:**
 
 ```bash
+# Clone and navigate to project
+git clone <repository-url>
+cd interview_help
+
+# Start all services
 docker-compose up
+
+# Open in browser
+# Frontend: http://localhost:3000
+# Backend API: http://localhost:8080
 ```
 
-Then open:
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:8080
-
-See [QUICKSTART.md](./QUICKSTART.md) for more details.
-
-## 📋 Table of Contents
-
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Installation](#installation)
-- [Development](#development)
-- [Project Structure](#project-structure)
-- [Getting Help](#getting-help)
+**Windows users can use the one-click starter:**
+```
+Double-click: ONE_CLICK_START.bat
+```
 
 ## ✨ Features
 
-- **Secure Video Interviews** - Real-time video/audio with WebRTC
-- **Collaborative Code Editor** - Live code editing and sharing
-- **Interview Scheduling** - Calendar-based scheduling system
-- **User Authentication** - JWT-based auth with email/password
-- **Real-time Communication** - WebSocket-based signaling
-- **Responsive Design** - Works on desktop, tablet, and mobile
-- **Database Persistence** - PostgreSQL for data storage
-- **Caching Layer** - Redis for session management
+### 🎥 **Real-time Video Interviews**
+- WebRTC-powered peer-to-peer video communication
+- Audio/video controls (mute, camera toggle)
+- Multiple participants support
+- Cross-platform compatibility
+
+### 💻 **Collaborative Code Editor**
+- Real-time code collaboration with Monaco Editor
+- Multiple programming languages (JavaScript, Python, Go, Java, C++)
+- Live code execution with Piston sandbox
+- Syntax highlighting and auto-completion
+
+### 📅 **Interview Management**
+- Schedule interviews with calendar integration
+- Email-based candidate invitations
+- Interview status tracking (scheduled, in-progress, completed)
+- Password-protected interview rooms
+
+### 🔐 **Authentication & Security**
+- JWT-based secure authentication
+- Bcrypt password hashing
+- Role-based access control (admin, recruiter, interviewer, candidate)
+- CORS protection and SQL injection prevention
+
+### 📊 **Dashboard & Analytics**
+- Comprehensive interview dashboard
+- User statistics and metrics
+- Recent interview history
+- Quick action buttons for common tasks
+
+### 💬 **Real-time Communication**
+- Live chat during interviews
+- WebSocket-based messaging
+- Message history and timestamps
+- Participant presence indicators
 
 ## 🛠 Tech Stack
 
 ### Frontend
-- **Next.js 14** - React framework with App Router
-- **TypeScript** - Type-safe JavaScript
-- **Tailwind CSS** - Utility-first CSS framework
-- **shadcn/ui** - High-quality UI components
-- **Zustand** - State management
-- **React Query** - Server state management
+- **Framework**: Next.js 14 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS + shadcn/ui components
+- **State Management**: Zustand
+- **Real-time**: WebRTC + WebSockets
+- **Code Editor**: Monaco Editor
+- **UI Components**: Radix UI primitives
 
 ### Backend
-- **Go 1.21+** - High-performance language
-- **Fiber** - Fast web framework
-- **GORM** - ORM for database
-- **PostgreSQL 14+** - Relational database
-- **Redis 7+** - Cache and session store
-- **WebRTC** - Real-time communication
+- **Language**: Go 1.21+
+- **Framework**: Fiber (high-performance web framework)
+- **Database**: PostgreSQL with GORM ORM
+- **Cache**: Redis
+- **Authentication**: JWT tokens
+- **WebSockets**: Gorilla WebSocket
+- **Code Execution**: Piston sandbox
 
-## 📦 Installation
+### Infrastructure
+- **Containerization**: Docker & Docker Compose
+- **Database**: PostgreSQL 15
+- **Cache**: Redis 7
+- **Code Runner**: Piston (secure code execution)
 
-### Prerequisites
-
-All installation options require:
-- **Git** - Version control
-- **Docker & Docker Compose** (Option 1) OR
-- **Node.js 18+** + **Go 1.21+** (Option 2) OR
-- **Individual services** (Option 3)
+## 📦 Installation Options
 
 ### Option 1: Docker Compose (Recommended) ⭐
 
-**Works on**: Windows, macOS, Linux
+**Prerequisites**: Docker & Docker Compose
 
 ```bash
-# 1. Clone or navigate to project
+# 1. Clone repository
+git clone <repository-url>
 cd interview_help
 
 # 2. Start all services
 docker-compose up
 
-# 3. Open in browser
+# 3. Access the application
 # Frontend: http://localhost:3000
 # Backend: http://localhost:8080
 ```
 
-**What starts automatically**:
+**What starts automatically:**
 - PostgreSQL database (port 5432)
 - Redis cache (port 6379)
 - Backend API (port 8080)
 - Frontend app (port 3000)
+- Piston code execution sandbox (port 2000)
 
-### Option 2: Manual Setup for Development
+### Option 2: Manual Development Setup
 
-#### Windows (PowerShell)
+**Prerequisites**: Node.js 18+, Go 1.21+, PostgreSQL, Redis
 
-```powershell
-# 1. Install Prerequisites
-# - Node.js: https://nodejs.org/ (LTS)
-# - Go: https://golang.org/dl/
-# - PostgreSQL: https://www.postgresql.org/download/windows/
-# - Redis: https://github.com/microsoftarchive/redis/releases
-
-# 2. Clone/Navigate to project
-cd interview_help
-
-# 3. Setup Environment
-# Backend
+#### Backend Setup
+```bash
+# 1. Navigate to backend
 cd backend
-Copy-Item ".env.example" ".env"  # Edit with your credentials
+
+# 2. Install dependencies
 go mod download
 
-# Frontend
-cd ../frontend
-npm install
+# 3. Setup environment
+cp .env.example .env
+# Edit .env with your database credentials
 
-# 4. Start Services
-# Terminal 1 - Backend
-cd backend
+# 4. Start backend
 go run main.go
-
-# Terminal 2 - Frontend
-cd frontend
-npm run dev
-
-# 5. Open Browser
-# Frontend: http://localhost:3000
-# Backend: http://localhost:8080
 ```
 
-#### macOS
+#### Frontend Setup
+```bash
+# 1. Navigate to frontend (new terminal)
+cd frontend
+
+# 2. Install dependencies
+npm install
+
+# 3. Setup environment
+cp .env.local.example .env.local
+# Edit with API URLs
+
+# 4. Start frontend
+npm run dev
+```
+
+#### Database Setup
+```bash
+# Start PostgreSQL and Redis
+# Database migrations run automatically on backend startup
+```
+
+### Option 3: Platform-Specific Setup
+
+<details>
+<summary><strong>Windows Setup</strong></summary>
+
+```powershell
+# 1. Install prerequisites
+# - Node.js: https://nodejs.org/
+# - Go: https://golang.org/dl/
+# - PostgreSQL: https://www.postgresql.org/download/windows/
+# - Redis: https://redis.io/docs/getting-started/installation/install-redis-on-windows/
+
+# 2. Clone and setup
+git clone <repository-url>
+cd interview_help
+
+# 3. Use batch files for easy startup
+.\ONE_CLICK_START.bat
+```
+</details>
+
+<details>
+<summary><strong>macOS Setup</strong></summary>
 
 ```bash
-# 1. Install Prerequisites (using Homebrew)
+# 1. Install prerequisites with Homebrew
 brew install node go postgresql redis
 
-# 2. Start Database Services
+# 2. Start services
 brew services start postgresql
 brew services start redis
 
-# 3. Navigate to project
+# 3. Clone and setup
+git clone <repository-url>
 cd interview_help
 
-# 4. Setup Backend
-cd backend
-cp .env.example .env
-# Edit .env with your credentials
-go mod download
-
-# 5. Setup Frontend
-cd ../frontend
-npm install
-
-# 6. Start Services
-# Terminal 1 - Backend
-cd backend
-go run main.go
-
-# Terminal 2 - Frontend
-cd frontend
-npm run dev
-
-# Open Browser: http://localhost:3000
+# 4. Follow manual setup steps above
 ```
+</details>
 
-#### Linux (Ubuntu/Debian)
+<details>
+<summary><strong>Linux Setup</strong></summary>
 
 ```bash
-# 1. Install Prerequisites
+# 1. Install prerequisites (Ubuntu/Debian)
 sudo apt update
-sudo apt install -y nodejs golang-go postgresql postgresql-contrib redis-server
+sudo apt install -y nodejs npm golang-go postgresql redis-server
 
-# 2. Start Services
-sudo systemctl start postgresql
-sudo systemctl start redis-server
+# 2. Start services
+sudo systemctl start postgresql redis-server
 
-# 3. Navigate to project
+# 3. Clone and setup
+git clone <repository-url>
 cd interview_help
 
-# 4. Setup Backend
-cd backend
-cp .env.example .env
-# Edit .env with database credentials
-go mod download
-
-# 5. Setup Frontend
-cd ../frontend
-npm install
-
-# 6. Start Services
-# Terminal 1 - Backend
-cd backend
-go run main.go
-
-# Terminal 2 - Frontend
-cd frontend
-npm run dev
-
-# Open Browser: http://localhost:3000
+# 4. Follow manual setup steps above
 ```
+</details>
 
-### Option 3: Cloud Deployment
-
-#### Deploy Frontend to Vercel
-
-```bash
-# 1. Install Vercel CLI
-npm install -g vercel
-
-# 2. Deploy Frontend
-cd frontend
-vercel
-
-# Follow the prompts
-```
-
-#### Deploy Backend
-
-See [SETUP.md](./SETUP.md#option-3-cloud-deployment) for AWS/Heroku/Render instructions.
-
-## 🔧 Development
-
-### Project Structure
+## 🏗 Project Structure
 
 ```
 interview_help/
-├── frontend/                    # Next.js React app
-│   ├── app/                    # Pages and routes
-│   ├── components/             # React components
-│   │   ├── CodeEditor.tsx      # Real-time code editor
-│   │   ├── InterviewRoom.tsx   # WebRTC video room
-│   │   └── ui/                 # Base UI components
-│   ├── lib/
-│   │   ├── api.ts              # API client
-│   │   ├── types.ts            # TypeScript types
-│   │   └── webrtc.ts           # WebRTC utilities
-│   ├── store/                  # Zustand stores
-│   ├── styles/                 # Global CSS
-│   └── package.json
+├── 📁 frontend/                    # Next.js React application
+│   ├── 📁 app/                    # App Router pages
+│   │   ├── page.tsx               # Landing page
+│   │   ├── layout.tsx             # Root layout
+│   │   ├── login/                 # Authentication pages
+│   │   ├── dashboard/             # Protected dashboard
+│   │   └── interview/[id]/        # Video interview rooms
+│   ├── 📁 components/             # React components
+│   │   ├── InterviewRoom.tsx      # WebRTC video component
+│   │   ├── CodeEditor.tsx         # Monaco code editor
+│   │   └── ui/                    # Base UI components
+│   ├── 📁 lib/                    # Utilities and configs
+│   ├── 📁 store/                  # Zustand state management
+│   └── 📄 package.json
 │
-├── backend/                     # Go backend
-│   ├── main.go                 # Entry point
-│   ├── go.mod                  # Dependencies
-│   ├── internal/
-│   │   ├── handlers/           # HTTP handlers
-│   │   ├── services/           # Business logic
-│   │   ├── models/             # Data models
-│   │   ├── middleware/         # Auth middleware
-│   │   ├── db/                 # Database setup
-│   │   └── utils/              # Utilities
-│   ├── migrations/             # Database migrations
-│   └── README.md               # Backend docs
+├── 📁 backend/                     # Go backend services
+│   ├── 📄 main.go                 # Application entry point
+│   ├── 📄 go.mod                  # Go dependencies
+│   ├── 📁 internal/
+│   │   ├── handlers/              # HTTP route handlers
+│   │   ├── models/                # Data models (GORM)
+│   │   ├── middleware/            # Auth and CORS middleware
+│   │   ├── db/                    # Database configuration
+│   │   └── utils/                 # Utility functions
+│   └── 📁 migrations/             # Database migrations
 │
-├── docker-compose.yml          # Docker configuration
-├── SETUP.md                    # Detailed setup guide
-├── API.md                      # API documentation
-├── ROADMAP.md                  # Feature roadmap
-└── README.md                   # This file
+├── 📁 electron/                    # Desktop application
+├── 📄 docker-compose.yml          # Docker services config
+├── 📄 Makefile                    # Development commands
+└── 📚 Documentation files
 ```
 
-### Common Development Commands
+## 🔧 Development
 
-**Frontend**:
-```bash
-cd frontend
+### Environment Variables
 
-npm install          # Install dependencies
-npm run dev          # Start dev server
-npm run build        # Build for production
-npm run lint         # Check code quality
-npm run type-check   # TypeScript checking
-```
-
-**Backend**:
-```bash
-cd backend
-
-go mod download      # Download dependencies
-go run main.go       # Run server
-go test ./...        # Run tests
-go build -o app      # Build binary
-go fmt ./...         # Format code
-```
-
-**Docker**:
-```bash
-docker-compose up               # Start all services
-docker-compose down             # Stop all services
-docker-compose logs -f          # View logs
-docker-compose exec postgres psql -U interviewos  # Access database
-```
-
-### Database Migrations
-
-Migrations run automatically on backend startup. To manually create migrations:
-
-```bash
-# Create migration file in backend/migrations/
-# Format: XXX_description.sql
-# Example: 002_add_users_table.sql
-
-# Backend will apply on startup
-go run main.go
-```
-
-### Environment Configuration
-
-**Backend** (`backend/.env`):
+**Backend** (`.env`):
 ```env
 DATABASE_URL=postgres://interviewos:password@localhost:5432/interviewos
 REDIS_URL=redis://localhost:6379
-JWT_SECRET=your-secret-key
+JWT_SECRET=your-jwt-secret-key
 PORT=8080
 ENV=development
 ```
 
-**Frontend** (`frontend/.env.local`):
+**Frontend** (`.env.local`):
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8080
 NEXT_PUBLIC_WS_URL=ws://localhost:8080
 ```
 
-## 🐛 Troubleshooting
-
-### Port Already in Use
+### Common Commands
 
 ```bash
-# Find process using port (macOS/Linux)
-lsof -i :3000
+# Frontend development
+cd frontend
+npm run dev          # Start dev server
+npm run build        # Build for production
+npm run lint         # Lint code
+npm run type-check   # TypeScript checking
 
-# Kill process
-kill -9 <PID>
+# Backend development
+cd backend
+go run main.go       # Start server
+go test ./...        # Run tests
+go build            # Build binary
+go fmt ./...        # Format code
 
-# Windows
-netstat -ano | findstr :3000
-taskkill /PID <PID> /F
+# Docker operations
+docker-compose up              # Start all services
+docker-compose down            # Stop all services
+docker-compose logs -f         # View logs
+docker-compose restart backend # Restart specific service
 ```
 
-### Database Connection Failed
+## 📚 API Documentation
 
-1. Verify PostgreSQL is running
-2. Check `DATABASE_URL` in `backend/.env`
-3. Ensure database exists: `createdb interviewos`
-4. Check credentials match
+### Authentication Endpoints
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login
+- `GET /api/auth/me` - Get current user
+- `POST /api/auth/logout` - User logout
 
-### Frontend Can't Reach Backend
-
-1. Verify `NEXT_PUBLIC_API_URL` is correct
-2. Check backend is running on port 8080
-3. Verify CORS settings in backend
-
-### WebRTC Connection Issues
-
-1. Check `NEXT_PUBLIC_WS_URL` is correct
-2. Ensure firewall allows WebRTC
-3. Test with another browser
-4. Check browser console for errors
-
-See [SETUP.md](./SETUP.md#troubleshooting) for more solutions.
-
-## 📚 Documentation
-
-- **[SETUP.md](./SETUP.md)** - Comprehensive setup guide (all platforms)
-- **[QUICKSTART.md](./QUICKSTART.md)** - Get started in 2 minutes
-- **[API.md](./API.md)** - Complete API reference
-- **[ROADMAP.md](./ROADMAP.md)** - Feature roadmap and timeline
-- **[CONTRIBUTING.md](./CONTRIBUTING.md)** - How to contribute
-- **[CHANGELOG.md](./CHANGELOG.md)** - Version history
-- **[frontend/README.md](./frontend/README.md)** - Frontend-specific documentation
-- **[backend/README.md](./backend/README.md)** - Backend-specific documentation
-
-## 💻 Additional Resources
-
-### Development Guides
-- **[Makefile](./Makefile)** - Useful development commands
-- **[docker-compose.yml](./docker-compose.yml)** - Local development stack
-- **[.github/copilot-instructions.md](./.github/copilot-instructions.md)** - Development guidelines
-
-### Learning Resources
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Go Documentation](https://golang.org/doc/)
-- [Fiber Framework](https://docs.gofiber.io/)
-- [PostgreSQL Docs](https://www.postgresql.org/docs/)
-- [Redis Docs](https://redis.io/documentation)
-- [WebRTC Guide](https://webrtc.org/getting-started/)
-- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
-- [Tailwind CSS](https://tailwindcss.com/docs)
-
-## 🤝 Contributing
-
-We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on:
-- Reporting bugs
-- Requesting features
-- Submitting pull requests
-- Code standards
-
-## 📄 License
-
-This project is licensed under the MIT License - see [LICENSE](./LICENSE) file for details.
-
-## 🆘 Getting Help
-
-### Documentation
-- Check [SETUP.md](./SETUP.md) for detailed setup instructions
-- Visit [API.md](./API.md) for API documentation
-- Read [ROADMAP.md](./ROADMAP.md) for feature information
-
-### Common Issues
-- **Port conflicts?** → See [Troubleshooting](#troubleshooting)
-- **Database issues?** → See [SETUP.md](./SETUP.md#troubleshooting)
-- **WebRTC problems?** → Check firewall settings and browser console
-
-### Community
-- GitHub Issues - Report bugs and request features
-- GitHub Discussions - Ask questions and discuss
-
-## 🎯 Quick References
-
-### First Time Setup Checklist
-- [ ] Clone/navigate to project
-- [ ] Choose installation method (Docker recommended)
-- [ ] Run setup command
-- [ ] Open http://localhost:3000
-- [ ] Create test account
-- [ ] Schedule a test interview
-
-### System Requirements
-| Component | Windows | macOS | Linux |
-|-----------|---------|-------|-------|
-| RAM | 4GB min | 4GB min | 4GB min |
-| Disk Space | 2GB | 2GB | 2GB |
-| Git | ✅ | ✅ | ✅ |
-| Docker | ✅ | ✅ | ✅ |
-| Node.js 18+ | ✅ | ✅ | ✅ |
-| Go 1.21+ | ✅ | ✅ | ✅ |
-
-### Default Ports
-| Service | Port | URL |
-|---------|------|-----|
-| Frontend | 3000 | http://localhost:3000 |
-| Backend API | 8080 | http://localhost:8080 |
-| PostgreSQL | 5432 | localhost:5432 |
-| Redis | 6379 | localhost:6379 |
-
----
-
-**Questions?** Check [SETUP.md](./SETUP.md) or open a GitHub issue.
-
-**Ready to contribute?** See [CONTRIBUTING.md](./CONTRIBUTING.md)!
-
-**Want to learn more?** Check out [ROADMAP.md](./ROADMAP.md) for upcoming features.
+### Interview Management
+- `GET /api/interviews` - List interviews
 - `POST /api/interviews` - Create interview
 - `GET /api/interviews/:id` - Get interview details
 - `PUT /api/interviews/:id` - Update interview
-- `DELETE /api/interviews/:id` - Cancel interview
+- `DELETE /api/interviews/:id` - Delete interview
+- `POST /api/interviews/:id/run` - Execute code
 
-### Rooms
-- `POST /api/rooms/join` - Join interview room
+### Room Management
 - `GET /api/rooms/:id` - Get room details
+- `POST /api/rooms/join` - Join interview room
+- `POST /api/rooms/:id/leave` - Leave room
 
-## WebSocket Events
-
-### Client → Server
+### WebSocket Events
 - `room:join` - Join interview room
-- `code:update` - Update collaborative code
-- `chat:message` - Send chat message
-- `participant:mute` - Mute audio
+- `code:sync` - Synchronize code changes
+- `chat:message` - Send/receive chat messages
+- `webrtc:offer/answer/ice` - WebRTC signaling
 
-### Server → Client
-- `room:participant-joined` - Participant joined
-- `room:participant-left` - Participant left
-- `code:update` - Code updated by another participant
-- `chat:new-message` - New chat message
+For complete API documentation, see [API.md](./API.md).
 
-## Contributing
+## 🐛 Troubleshooting
 
-1. Create a feature branch (`git checkout -b feature/amazing-feature`)
-2. Commit changes (`git commit -m 'Add amazing feature'`)
-3. Push to branch (`git push origin feature/amazing-feature`)
-4. Open a Pull Request
+### Common Issues
 
-## License
+**Port already in use:**
+```bash
+# Find and kill process using port
+lsof -i :3000        # macOS/Linux
+netstat -ano | findstr :3000  # Windows
+```
 
-MIT License - see LICENSE file for details
+**Database connection failed:**
+1. Verify PostgreSQL is running
+2. Check `DATABASE_URL` in backend `.env`
+3. Ensure database exists: `createdb interviewos`
 
-## Support
+**Frontend can't reach backend:**
+1. Verify `NEXT_PUBLIC_API_URL` is correct
+2. Check backend is running on port 8080
+3. Verify CORS settings
 
-For issues and questions, please open a GitHub issue or contact support@interviewos.com
-#   i n t e r v i e w _ O S 
+**WebRTC connection issues:**
+1. Check firewall settings
+2. Verify browser permissions for camera/microphone
+3. Test with different browser
+4. Check browser console for errors
+
+### Getting Help
+
+- 📖 **Documentation**: Check [SETUP.md](./SETUP.md) for detailed setup
+- 🐛 **Issues**: Report bugs on GitHub Issues
+- 💬 **Discussions**: Ask questions in GitHub Discussions
+- 📧 **Email**: Contact support team
+
+## 🚀 Production Deployment
+
+### Frontend (Vercel)
+```bash
+# Install Vercel CLI
+npm install -g vercel
+
+# Deploy
+cd frontend
+vercel
+```
+
+### Backend (Docker)
+```bash
+# Build production image
+docker build -f backend/Dockerfile.prod -t interviewos-backend .
+
+# Run with environment variables
+docker run -p 8080:8080 --env-file .env.prod interviewos-backend
+```
+
+### Database (Production)
+- Use managed PostgreSQL (AWS RDS, Google Cloud SQL, etc.)
+- Configure connection pooling
+- Set up automated backups
+- Enable SSL connections
+
+See [DEPLOYMENT_STEPS.md](./DEPLOYMENT_STEPS.md) for complete deployment guide.
+
+## 🤝 Contributing
+
+We welcome contributions! Please follow these steps:
+
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
+3. **Make your changes** and add tests
+4. **Commit changes**: `git commit -m 'Add amazing feature'`
+5. **Push to branch**: `git push origin feature/amazing-feature`
+6. **Open a Pull Request**
+
+### Development Guidelines
+- Follow existing code style and conventions
+- Add tests for new features
+- Update documentation as needed
+- Ensure all tests pass before submitting PR
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
+
+## 📋 Roadmap
+
+### Phase 1 (Current) ✅
+- [x] User authentication and management
+- [x] Interview scheduling and management
+- [x] WebRTC video communication
+- [x] Real-time collaborative code editor
+- [x] Live chat functionality
+- [x] Docker containerization
+
+### Phase 2 (In Progress) 🚧
+- [ ] Interview recording and playback
+- [ ] Advanced code execution with multiple languages
+- [ ] Interview feedback and rating system
+- [ ] Email notifications and reminders
+- [ ] Calendar integration (Google Calendar, Outlook)
+- [ ] Mobile responsive improvements
+
+### Phase 3 (Planned) 📋
+- [ ] AI-powered interview insights
+- [ ] Whiteboard and screen sharing
+- [ ] Team collaboration features
+- [ ] Advanced analytics and reporting
+- [ ] Integration with ATS systems
+- [ ] Multi-tenancy support
+
+See [IMPROVEMENTS_ROADMAP.md](./IMPROVEMENTS_ROADMAP.md) for detailed feature roadmap.
+
+## 🏆 Project Statistics
+
+- **Frontend**: 30+ TypeScript files, 2000+ lines of code
+- **Backend**: 15+ Go files, 800+ lines of code  
+- **API Endpoints**: 14 implemented endpoints
+- **Database Tables**: 5 core tables with relationships
+- **UI Components**: 10+ custom React components
+- **Docker Services**: 5 containerized services
+- **Documentation**: 8 comprehensive guides
+
+## 📄 Documentation
+
+| Document | Description |
+|----------|-------------|
+| [README.md](./README.md) | **This file** - Project overview and setup |
+| [QUICK_START.md](./QUICK_START.md) | Get started in 2 minutes |
+| [SETUP.md](./SETUP.md) | Detailed setup for all platforms |
+| [API.md](./API.md) | Complete API reference |
+| [BUILD_SUMMARY.md](./BUILD_SUMMARY.md) | Development build summary |
+| [IMPROVEMENTS_ROADMAP.md](./IMPROVEMENTS_ROADMAP.md) | Feature roadmap |
+| [CONTRIBUTING.md](./CONTRIBUTING.md) | Contribution guidelines |
+| [DEPLOYMENT_STEPS.md](./DEPLOYMENT_STEPS.md) | Production deployment |
+
+## 📞 Support
+
+### Quick Links
+- 🚀 **Quick Start**: [QUICK_START.md](./QUICK_START.md)
+- 🔧 **Setup Help**: [SETUP.md](./SETUP.md)
+- 🐛 **Bug Reports**: GitHub Issues
+- 💬 **Questions**: GitHub Discussions
+- 📧 **Email**: Create an issue for direct support
+
+### System Requirements
+| Component | Minimum | Recommended |
+|-----------|---------|-------------|
+| **RAM** | 4GB | 8GB+ |
+| **Storage** | 2GB free | 5GB+ free |
+| **Node.js** | 18.0+ | 20.0+ |
+| **Go** | 1.21+ | 1.21+ |
+| **Docker** | 20.0+ | Latest |
+
+## 📜 License
+
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- **Next.js Team** - For the amazing React framework
+- **Fiber Team** - For the high-performance Go web framework
+- **Monaco Editor** - For the powerful code editor
+- **WebRTC Community** - For real-time communication standards
+- **Docker** - For containerization platform
+- **PostgreSQL** - For reliable database system
+
+---
+
+<div align="center">
+
+**Built with ❤️ for better interviews**
+
+[⭐ Star this project](https://github.com/your-username/interview_help) • [🐛 Report Bug](https://github.com/your-username/interview_help/issues) • [💡 Request Feature](https://github.com/your-username/interview_help/issues)
+
+</div>#   o n e - o n e - i n t e r v i e w - p l a t f o r m  
+ #   o n e - o n e - i n t e r v i e w - p l a t f o r m  
  
- #   i n t e r v i e w _ O S 
- 
- #   i n t e r v i e w _ O S 
- 
- #   i n t e r v i e w _ h e l p  
- #   i n t e r v i e w _ h e l p  
- # interview_help

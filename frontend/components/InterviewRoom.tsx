@@ -56,6 +56,11 @@ export function InterviewRoom({ roomId }: { roomId: string }) {
 	const [isExecuting, setIsExecuting] = useState(false)
 	const [executionResult, setExecutionResult] = useState<any>(null)
 
+	// Interview metadata
+	const [interviewType, setInterviewType] = useState<string>('coding')
+	const [interviewId, setInterviewId] = useState<string | null>(null)
+	const [isInterviewLoading, setIsInterviewLoading] = useState(true)
+
 	// Chat and UI Control states
 	const [messages, setMessages] = useState<Message[]>([])
 	const [chatInput, setChatInput] = useState('')
@@ -94,6 +99,59 @@ export function InterviewRoom({ roomId }: { roomId: string }) {
 	useEffect(() => {
 		if (!user) return
 
+		// Fetch interview details (type)
+		const fetchInterview = async () => {
+			try {
+				const token = localStorage.getItem('token')
+				
+				// First fetch the room to get the interview ID
+				const roomRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/rooms/${roomId}`, {
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: token ? `Bearer ${token}` : '',
+					},
+				})
+				
+				if (!roomRes.ok) {
+					console.warn('Failed to fetch room details', roomRes.status)
+					setIsInterviewLoading(false)
+					return
+				}
+				
+				const roomData = await roomRes.json()
+				const fetchedInterviewId = roomData.interviewId || roomData.interview_id
+				
+				if (!fetchedInterviewId) {
+					console.warn('No interview ID found in room data')
+					setIsInterviewLoading(false)
+					return
+				}
+				
+				// Store the interview ID
+				setInterviewId(fetchedInterviewId)
+				
+				// Now fetch the interview details
+				const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/interviews/${fetchedInterviewId}`, {
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: token ? `Bearer ${token}` : '',
+					},
+				})
+				if (res.ok) {
+					const data = await res.json()
+					setInterviewType(data.type || 'coding')
+				} else {
+					console.warn('Failed to fetch interview details', res.status)
+				}
+			} catch (err) {
+				console.error('Error fetching interview:', err)
+			} finally {
+				setIsInterviewLoading(false)
+			}
+		}
+
+		fetchInterview()
+
 		let streamAllocated: MediaStream | null = null
 
 		const initConnection = async () => {
@@ -114,8 +172,10 @@ export function InterviewRoom({ roomId }: { roomId: string }) {
 				const wsHost = process.env.NEXT_PUBLIC_WS_URL 
 					? process.env.NEXT_PUBLIC_WS_URL.replace(/^http(s)?/, 'ws')
 					: `${wsProtocol}//localhost:8080`
-				
-				const wsUrl = `${wsHost}/ws/${roomId}?userId=${user.id}&name=${encodeURIComponent(user.name)}`
+			
+				// Include JWT token for server-side WebSocket authentication
+				const token = localStorage.getItem('token') || ''
+				const wsUrl = `${wsHost}/ws/${roomId}?token=${encodeURIComponent(token)}&userId=${user.id}&name=${encodeURIComponent(user.name)}`
 				console.log('WS: Connecting to', wsUrl)
 				
 				const ws = new WebSocket(wsUrl)
@@ -358,22 +418,52 @@ export function InterviewRoom({ roomId }: { roomId: string }) {
 		setIsExecuting(true)
 		setExecutionResult(null)
 
+		// Prevent running code in non-coding interviews
+		if (interviewType !== 'coding') {
+			setExecutionResult({ error: `This interview is in '${interviewType}' mode. Code execution is disabled.` })
+			setIsExecuting(false)
+			return
+		}
+
+		const token = localStorage.getItem('token')
+		if (!token) {
+			setExecutionResult({ error: 'Missing auth token. Please login.' })
+			setIsExecuting(false)
+			return
+		}
+
+		if (!interviewId) {
+			setExecutionResult({ error: 'Interview ID not loaded yet. Please wait.' })
+			setIsExecuting(false)
+			return
+		}
+
 		try {
-			const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/interviews/${roomId}/run`, {
+				const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/interviews/${interviewId}/run`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: `Bearer ${localStorage.getItem('token')}`,
+					Authorization: `Bearer ${token}`,
 				},
 				body: JSON.stringify({ code, language }),
 			})
 
-			if (!response.ok) {
-				throw new Error('Code execution failed')
-			}
+				if (!response.ok) {
+					// Try to read error body for more context
+					const text = await response.text()
+					let parsed: any = null
+					try {
+						parsed = JSON.parse(text)
+					} catch (e) {
+						parsed = { message: text }
+					}
+					console.error('RunCode failed:', response.status, parsed)
+					setExecutionResult({ error: parsed.message || parsed.error || 'Code execution failed' })
+					return
+				}
 
-			const result = await response.json()
-			setExecutionResult(result)
+				const result = await response.json()
+				setExecutionResult(result)
 		} catch (error) {
 			console.error('Error running code:', error)
 			setExecutionResult({ error: 'Failed to run code execution container.' })
@@ -508,6 +598,40 @@ export function InterviewRoom({ roomId }: { roomId: string }) {
 
 					{/* Participants Details & Invitation Action */}
 					<div className="flex items-center gap-3.5 text-[10px] font-bold text-slate-350 select-none">
+						{/* Interview type display & toggle */}
+						<div className="flex items-center gap-2 mr-2 text-[10px]">
+							<span className="text-slate-400 uppercase text-[9px]">Mode:</span>
+							<span className="px-2 py-0.5 bg-[#222] rounded text-[9px]">{isInterviewLoading ? 'Loading' : interviewType}</span>
+							{isInterviewer && !isInterviewLoading && (
+								<button
+									onClick={async () => {
+										const newType = interviewType === 'coding' ? 'system-design' : 'coding'
+										try {
+											const token = localStorage.getItem('token')
+											const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/interviews/${roomId}`, {
+												method: 'PUT',
+												headers: { 'Content-Type': 'application/json', Authorization: token ? `Bearer ${token}` : '' },
+												body: JSON.stringify({ type: newType }),
+											})
+											if (res.ok) {
+												setInterviewType(newType)
+												toast.success(`Interview set to ${newType}`)
+											} else {
+												const t = await res.text()
+												console.warn('Failed toggling interview type', res.status, t)
+												toast.error('Failed to change interview mode')
+											}
+										} catch (err) {
+											console.error(err)
+											toast.error('Unable to change interview mode')
+										}
+									}}
+									className="ml-2 px-2 py-0.5 text-[9px] bg-[#2b2b2b] hover:bg-[#343434] rounded text-slate-200"
+								>
+									Toggle
+								</button>
+							)}
+						</div>
 						<button 
 							onClick={() => setShowChatDrawer(true)}
 							className="text-slate-400 hover:text-slate-200 mr-1.5 flex items-center gap-1 transition-colors"

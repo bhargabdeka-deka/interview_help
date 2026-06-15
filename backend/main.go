@@ -38,7 +38,7 @@ func main() {
 	app := fiber.New()
 
 	// Middleware
-	app.Use(middleware.CORSMiddleware)
+	app.Use(middleware.CORSMiddleware())
 
 	// Routes
 	// Health check
@@ -70,6 +70,7 @@ func main() {
 	// Feedback routes
 	app.Post("/api/interviews/:id/feedback", middleware.AuthMiddleware, handlers.SubmitFeedback)
 	app.Get("/api/interviews/:id/feedback", middleware.AuthMiddleware, handlers.GetFeedback)
+	app.Post("/api/interviews/:id/evaluation", middleware.AuthMiddleware, handlers.UpdateEvaluation)
 
 	// WebSocket Upgrade & Signaling route
 	app.Use("/ws", func(c *fiber.Ctx) error {

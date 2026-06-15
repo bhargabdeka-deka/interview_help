@@ -1,0 +1,29 @@
+FROM node:18-alpine AS frontend-builder
+
+WORKDIR /frontend
+COPY frontend/package*.json ./
+RUN npm ci --legacy-peer-deps
+
+COPY frontend . 
+RUN npm run build
+
+FROM node:18-alpine AS electron-builder
+
+WORKDIR /app
+
+# Copy package files
+COPY electron/package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy frontend build output
+COPY --from=frontend-builder /frontend/.next ./.next
+COPY --from=frontend-builder /frontend/public ./public
+
+# Copy electron app files
+COPY electron/main.js .
+COPY electron/preload.js .
+
+EXPOSE 3000
+CMD ["npm","start"]

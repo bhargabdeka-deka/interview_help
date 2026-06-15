@@ -37,6 +37,7 @@ type Interview struct {
 	HostID      string    `json:"hostId"`
 	CandidateID string    `json:"candidateId"`
 	Status      string    `json:"status"` // scheduled, in-progress, completed, cancelled
+	Type        string    `json:"type"`   // coding, system-design
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`
 
@@ -49,6 +50,9 @@ type Interview struct {
 func (i *Interview) BeforeCreate(tx *gorm.DB) error {
 	if i.ID == "" {
 		i.ID = uuid.New().String()
+	}
+	if i.Type == "" {
+		i.Type = "coding"
 	}
 	return nil
 }
