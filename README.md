@@ -20,144 +20,53 @@ The platform provides a native desktop client via Electron alongside its standar
 
 The application is built using a decoupled architecture, comprising a single-page Next.js web application, an Electron desktop wrapper, and a high-performance Go (Fiber) API and WebSocket signaling server.
 
-```mermaid
-graph TD
-    subgraph Client Tier
-        UserBrowser[Web Browser / Electron App]
-    end
-
-    subgraph Application Tier
-        FiberServer[Go/Fiber API Server]
-        WebSocketHub[WebSocket Connection Hub]
-    end
-
-    subgraph Execution & Caching Tier
-        Postgres[(PostgreSQL 15 DB)]
-        Redis[(Redis 7 Cache)]
-        Piston[Piston Sandbox Runner]
-    end
-
-    UserBrowser -- HTTPS / REST APIs --> FiberServer
-    UserBrowser -- WebSockets --> WebSocketHub
-    FiberServer -- GORM/SQL Queries --> Postgres
-    WebSocketHub -- Session Sync --> Redis
-    FiberServer -- Code Run Proxy --> Piston
-    UserBrowser <== P2P WebRTC Audio/Video ==> UserBrowser
-```
+![System Architecture](./diagrams/architecture.png)
 
 ### Relational Database Schema (ERD)
 
 The relational database is backed by PostgreSQL. The data models and relationships are defined as follows:
 
-```mermaid
-erDiagram
-    USERS {
-        string id PK
-        string email UK
-        string name
-        string password
-        string role
-        string avatar
-        timestamp created_at
-        timestamp updated_at
-    }
-    INTERVIEWS {
-        string id PK
-        string title
-        string description
-        timestamp scheduled_at
-        int duration
-        string room_id
-        string host_id FK
-        string candidate_id FK
-        string status
-        timestamp created_at
-        timestamp updated_at
-    }
-    INTERVIEW_ROOMS {
-        string id PK
-        string interview_id FK
-        string password
-        string rtc_token
-        timestamp created_at
-        timestamp updated_at
-    }
-    FEEDBACKS {
-        string id PK
-        string interview_id FK
-        int rating
-        string comment
-        timestamp created_at
-        timestamp updated_at
-    }
-    CODE_SESSIONS {
-        string id PK
-        string interview_id FK
-        string language
-        string code
-        timestamp created_at
-        timestamp updated_at
-    }
+![Entity Relationship Diagram](./diagrams/erd.png)
 
-    USERS ||--o{ INTERVIEWS : "hosts"
-    USERS ||--o{ INTERVIEWS : "attends"
-    INTERVIEWS ||--|| INTERVIEW_ROOMS : "contains"
-    INTERVIEWS ||--|| FEEDBACKS : "has"
-    INTERVIEWS ||--|| CODE_SESSIONS : "stores"
-```
+### Frontend Component Architecture
+
+The Next.js frontend is modularized around Zustand state stores. The diagram below shows how the App Router connects to key UI panels and external engines.
+
+![Frontend Component Architecture](./diagrams/frontend_architecture.png)
+
+### Docker Container Orchestration
+
+All services are containerized with Docker Compose. Startup order is enforced through health checks — the backend only starts after PostgreSQL and Redis are confirmed healthy.
+
+![Docker Orchestration](./diagrams/docker_orchestration.png)
 
 ---
 
 ## Core System Workflows
 
-### 1. WebRTC Signaling & Media Flow
-Direct peer-to-peer connection initialization requires direct SDP offers, answers, and ICE candidate exchanges. The Go WebSocket server acts as the secure signaling channel between participants.
+### 1. Authentication & Authorization Flow (JWT)
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Alice as Interviewer
-    actor Bob as Candidate
-    participant WS as WebSocket Hub (Go)
+All API endpoints are protected by stateless JWT authentication. The diagram below illustrates the full login and token verification sequence.
 
-    Alice->>WS: Connects to Room (/ws/:roomId)
-    WS-->>Alice: Returns active room list ("room-users")
-    Bob->>WS: Connects to Room (/ws/:roomId)
-    WS-->>Alice: Broadcasts "peer-joined" (Bob's UserID)
-    WS-->>Bob: Returns active room list (Alice's UserID)
-    
-    Note over Alice,Bob: WebRTC Connection Initiation
-    Alice->>WS: Send WebRTC Offer (Target: Bob)
-    WS->>Bob: Forward Offer
-    Bob->>WS: Send WebRTC Answer (Target: Alice)
-    WS->>Alice: Forward Answer
-    
-    Note over Alice,Bob: ICE Candidate Exchange
-    Alice->>WS: Send Ice Candidate
-    WS->>Bob: Forward Ice Candidate
-    Bob->>WS: Send Ice Candidate
-    WS->>Alice: Forward Ice Candidate
-    
-    Note over Alice,Bob: P2P Audio/Video Stream Established
-```
+![Authentication Flow](./diagrams/auth_flow.png)
 
-### 2. Sandboxed Code Execution
-To ensure the host machine remains safe, candidate-submitted code runs inside an isolated, resource-constrained execution container using the Piston service.
+### 2. WebRTC Signaling & Media Flow
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Client as Candidate Browser
-    participant API as Go API Server
-    participant Piston as Piston Container
+Direct peer-to-peer connection initialization requires SDP offer/answer exchanges and ICE candidate negotiation. The Go WebSocket server acts as the secure signaling channel between participants.
 
-    Client->>API: POST /api/interviews/:id/run {language, code}
-    API->>API: Map language ID to Piston profiles
-    API->>Piston: POST /api/v2/execute {language, files}
-    Note over Piston: Runs code inside isolated sandbox with constraints
-    Piston-->>API: Returns {stdout, stderr, exitCode}
-    API-->>Client: Returns HTTP 200 Run Results
-```
+![WebRTC Signaling Flow](./diagrams/webrtc.png)
+
+### 3. Sandboxed Code Execution
+
+Candidate-submitted code runs inside an isolated, resource-constrained Piston container. The backend acts as a secure proxy — the client never communicates with Piston directly.
+
+![Code Execution Flow](./diagrams/code_execution.png)
+
+### 4. Interview Lifecycle State Machine
+
+Each interview record transitions through a defined set of states from creation to final evaluation.
+
+![Interview Lifecycle State Machine](./diagrams/state_machine.png)
 
 ---
 
