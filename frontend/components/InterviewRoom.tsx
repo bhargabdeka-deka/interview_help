@@ -418,12 +418,6 @@ export function InterviewRoom({ roomId }: { roomId: string }) {
 		setIsExecuting(true)
 		setExecutionResult(null)
 
-		// Prevent running code in non-coding interviews
-		if (interviewType !== 'coding') {
-			setExecutionResult({ error: `This interview is in '${interviewType}' mode. Code execution is disabled.` })
-			setIsExecuting(false)
-			return
-		}
 
 		const token = localStorage.getItem('token')
 		if (!token) {

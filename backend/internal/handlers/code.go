@@ -79,14 +79,10 @@ func RunCode(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "code cannot be empty"})
 	}
 
-	// Load interview and ensure it's a coding interview
+	// Verify interview exists
 	var interview models.Interview
 	if err := db.DB.First(&interview, "id = ?", id).Error; err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"message": "interview not found"})
-	}
-
-	if interview.Type != "coding" {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "execution not allowed for non-coding interviews", "type": interview.Type})
 	}
 
 	pistonLang, version := mapLanguage(req.Language)

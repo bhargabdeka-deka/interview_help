@@ -1,7 +1,0 @@
-stateDiagram-v2
-    [*] --> Scheduled: HR Creates Interview
-    Scheduled --> Active: Host Joins Room
-    Active --> Ongoing: Candidate Joins Room
-    Ongoing --> Completed: Host Ends Interview
-    Completed --> Evaluated: Host Submits Feedback
-    Evaluated --> [*]

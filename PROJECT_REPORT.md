@@ -27,7 +27,8 @@ The application adopts a decoupled architecture featuring a single-page frontend
 ```mermaid
 graph TD
     subgraph Client Tier
-        UserBrowser[Web Browser - Next.js App]
+        WebClient[Web Browser - Next.js App]
+        DesktopClient[Electron Desktop App]
     end
 
     subgraph Application Tier
@@ -41,12 +42,19 @@ graph TD
         Piston[Piston Sandbox Runner]
     end
 
-    UserBrowser -- HTTPS / REST APIs --> FiberServer
-    UserBrowser -- WebSockets --> WebSocketHub
+    WebClient -- HTTPS / REST APIs --> FiberServer
+    DesktopClient -- HTTPS / REST APIs --> FiberServer
+    
+    WebClient -- WebSockets --> WebSocketHub
+    DesktopClient -- WebSockets --> WebSocketHub
+
     FiberServer -- GORM/SQL Queries --> Postgres
     WebSocketHub -- Session Sync --> Redis
     FiberServer -- Code Run Proxy --> Piston
-    UserBrowser <== P2P WebRTC Audio/Video ==> UserBrowser
+    
+    WebClient <== P2P WebRTC Audio/Video ==> WebClient
+    DesktopClient <== P2P WebRTC Audio/Video ==> DesktopClient
+    WebClient <== P2P WebRTC Audio/Video ==> DesktopClient
 ```
 
 </details>
