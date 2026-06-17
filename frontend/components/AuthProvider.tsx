@@ -13,5 +13,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [token, getCurrentUser])
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const activeRoomId = localStorage.getItem('active_interview_room_id')
+      const currentPath = window.location.pathname
+      if (activeRoomId && currentPath !== `/interview/${activeRoomId}`) {
+        window.location.href = `/interview/${activeRoomId}`
+      }
+    }
+  }, [])
+
   return <>{children}</>
 }

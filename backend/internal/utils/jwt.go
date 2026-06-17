@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/joho/godotenv"
 	"interviewos/internal/models"
 )
 
@@ -14,6 +15,10 @@ var jwtSecret string
 
 // init validates JWT_SECRET on package load
 func init() {
+	_ = godotenv.Load("../../.env")
+	_ = godotenv.Load("../.env")
+	_ = godotenv.Load()
+
 	jwtSecret = os.Getenv("JWT_SECRET")
 	if jwtSecret == "" {
 		log.Fatal("CRITICAL: JWT_SECRET environment variable must be set. Refusing to start.")

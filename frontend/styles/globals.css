@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
 * {
   @apply box-border;
 }
@@ -11,26 +13,154 @@ html {
 }
 
 body {
-  @apply bg-white text-black;
+  @apply bg-bg text-text-primary font-sans;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .container {
-  @apply mx-auto px-4 sm:px-6 lg:px-8;
+  @apply mx-auto max-w-content px-6 sm:px-12 md:px-24;
 }
 
-/* Custom scrollbar */
+/* Typography hierarchy */
+h1 {
+  @apply text-4xl font-bold text-text-primary;
+}
+
+h2 {
+  @apply text-3xl font-bold text-text-primary;
+}
+
+h3 {
+  @apply text-2xl font-semibold text-text-primary;
+}
+
+h4 {
+  @apply text-xl font-semibold text-text-primary;
+}
+
+h5 {
+  @apply text-lg font-semibold text-text-primary;
+}
+
+h6 {
+  @apply text-base font-semibold text-text-primary;
+}
+
+p {
+  @apply text-base text-text-secondary leading-relaxed max-w-[72ch];
+}
+
+/* Code styling */
+code {
+  @apply font-code bg-code-bg px-2 py-1 rounded text-sm text-accent;
+}
+
+pre {
+  @apply bg-code-bg p-5 rounded-none overflow-x-auto border border-border;
+}
+
+pre code {
+  @apply bg-transparent px-0 py-0;
+}
+
+/* Custom scrollbar - dark theme */
 ::-webkit-scrollbar {
-  @apply w-2;
+  @apply w-2 h-2;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-white;
+  @apply bg-bg;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-black rounded-lg;
+  @apply bg-border rounded-none;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-800;
+  @apply bg-accent;
 }
+
+/* Focus styles for accessibility */
+:focus-visible {
+  @apply outline-none ring-2 ring-offset-2 ring-accent ring-offset-bg;
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Smooth transitions */
+button, a, input, select, textarea {
+  @apply transition-all duration-150 ease-in-out;
+}
+
+/* Primary Button - LeetCode style */
+.btn-primary {
+  @apply bg-accent hover:bg-[#0d9b6c] text-bg px-5 py-2.5 rounded-none text-sm font-semibold;
+  @apply transition-colors duration-150 ease-in-out;
+}
+
+.btn-primary:focus-visible {
+  @apply ring-2 ring-offset-2 ring-accent ring-offset-bg;
+}
+
+/* Secondary / Ghost Button */
+.btn-secondary {
+  @apply bg-transparent border border-border text-text-primary px-5 py-2.5 rounded-none text-sm font-semibold;
+  @apply hover:bg-surface hover:border-accent transition-all duration-150 ease-in-out;
+}
+
+.btn-secondary:focus-visible {
+  @apply ring-2 ring-offset-2 ring-accent ring-offset-bg;
+}
+
+/* Card styles - dark with accent borders */
+.card {
+  @apply bg-surface rounded-none border border-border shadow-sm;
+  @apply hover:border-accent hover:shadow-md transition-all duration-200 ease-in-out;
+  @apply p-6;
+}
+
+/* Badge / Tag styles */
+.badge {
+  @apply inline-block px-2.5 py-1 rounded-none text-xs font-medium;
+}
+
+.badge-accent {
+  @apply bg-code-bg text-accent;
+}
+
+.badge-success {
+  @apply bg-green-900 text-success;
+}
+
+.badge-error {
+  @apply bg-red-900 text-error;
+}
+
+/* Syntax highlighting for code blocks */
+.hljs-keyword { @apply text-accent; }
+.hljs-string { @apply text-success; }
+.hljs-comment { @apply text-text-secondary; }
+.hljs-function { @apply text-accent; }
+.hljs-number { @apply text-yellow-400; }
+.hljs-variable { @apply text-text-primary; }
+
+/* Form inputs */
+input, textarea, select {
+  @apply border-border bg-code-bg rounded-none text-base text-text-primary;
+  @apply transition-all duration-150 ease-in-out;
+}
+
+input:focus, textarea:focus, select:focus {
+  @apply border-accent ring-2 ring-accent ring-opacity-20 outline-none;
+}
+
+/* Status colors already defined in Tailwind, no custom classes needed */

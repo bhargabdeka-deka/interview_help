@@ -8,12 +8,16 @@ import { Card, CardContent } from '@/components/ui/card'
 import { useAuthStore } from '@/store/authStore'
 import { apiClient } from '@/lib/api'
 import { Interview } from '@/lib/types'
-import { Plus, Key, ChevronRight, LogOut, ShieldAlert } from 'lucide-react'
+import { Plus, Key, ChevronRight, LogOut, ShieldAlert, TerminalSquare } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 // Helper to generate a consistent avatar style based on string
 const getAvatarStyle = (str: string) => {
-	const styles = ['bg-black text-white', 'bg-gray-800 text-white', 'bg-gray-700 text-white']
+	const styles = [
+		'bg-code-bg border border-border text-accent',
+		'bg-surface border border-border text-text-primary',
+		'bg-bg border border-border text-text-secondary'
+	]
 	let hash = 0
 	for (let i = 0; i < str.length; i++) {
 		hash = str.charCodeAt(i) + ((hash << 5) - hash)
@@ -88,15 +92,13 @@ export default function DashboardPage() {
 	const uniqueCandidates = Array.from(candidatesMap.values())
 
 	return (
-		<div className="min-h-screen bg-white text-black font-sans antialiased">
+		<div className="min-h-screen bg-bg text-text-primary font-sans antialiased">
 			{/* Header */}
-			<header className="bg-white border-b border-black sticky top-0 z-50">
+			<header className="bg-surface border-b border-border sticky top-0 z-50">
 				<div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
 					<div className="flex items-center gap-3">
-						<div className="flex h-9 w-9 items-center justify-center rounded-lg bg-black text-white font-bold text-sm">
-							I
-						</div>
-						<span className="font-bold text-black text-sm">
+						<TerminalSquare className="text-accent w-7 h-7" strokeWidth={2.5} />
+						<span className="font-logo font-black text-text-primary text-xl tracking-tight">
 							InterviewOS
 						</span>
 					</div>
@@ -108,14 +110,14 @@ export default function DashboardPage() {
 							placeholder="Search candidates or sessions..."
 							value={searchQuery}
 							onChange={(e) => setSearchQuery(e.target.value)}
-							className="w-full pl-3 pr-4 py-2 bg-white border border-black focus:border-black rounded-lg text-sm font-medium text-black transition-all focus:outline-none placeholder:text-gray-500"
+							className="w-full pl-3 pr-4 py-2 bg-code-bg border border-border focus:border-accent rounded-none text-sm font-medium text-text-primary transition-all focus:outline-none placeholder:text-text-secondary"
 						/>
 					</div>
 
 					{/* Sign Out Action Button */}
 					<button
 						onClick={handleLogout}
-						className="h-8 w-8 rounded-lg border border-black bg-white hover:bg-black hover:text-white flex items-center justify-center text-black transition-all duration-200"
+						className="h-8 w-8 rounded-none border border-border bg-code-bg hover:bg-surface hover:text-accent hover:border-accent flex items-center justify-center text-text-primary transition-all duration-200"
 						title="Sign Out"
 					>
 						<LogOut size={16} />
@@ -128,10 +130,10 @@ export default function DashboardPage() {
 				
 				{/* Welcome header */}
 				<div className="text-center space-y-1">
-					<h2 className="text-xl font-bold text-black">
+					<h2 className="text-2xl font-bold text-text-primary">
 						Welcome, {user?.name || 'Recruiter'}
 					</h2>
-					<p className="text-sm text-gray-600">
+					<p className="text-sm text-text-secondary">
 						Dashboard
 					</p>
 				</div>
@@ -140,27 +142,27 @@ export default function DashboardPage() {
 				<div className="grid grid-cols-2 gap-4">
 					{/* Action: Schedule Round */}
 					<Link href="/dashboard/interviews/new" className="block group">
-						<Card className="bg-white border border-black hover:bg-gray-50 cursor-pointer transition-all duration-300 h-full rounded-lg">
+						<Card className="bg-surface border border-border hover:border-accent transition-all duration-300 h-full rounded-none">
 							<CardContent className="p-5 flex flex-col items-center justify-center text-center gap-3">
-								<div className="h-10 w-10 rounded-lg bg-black text-white flex items-center justify-center group-hover:scale-105 transition-transform">
+								<div className="h-10 w-10 rounded-none bg-accent text-bg flex items-center justify-center group-hover:scale-105 transition-transform">
 									<Plus size={18} />
 								</div>
 								<div>
-									<h3 className="text-sm font-bold text-black group-hover:text-gray-700 transition-colors">Schedule Interview</h3>
-									<p className="text-xs text-gray-600 font-medium mt-0.5">Create new session</p>
+									<h3 className="text-sm font-bold text-text-primary group-hover:text-accent transition-colors">Schedule Interview</h3>
+									<p className="text-xs text-text-secondary font-medium mt-0.5">Create new session</p>
 								</div>
 							</CardContent>
 						</Card>
 					</Link>
 
 					{/* Action: Direct Join */}
-					<Card className="bg-white border border-black hover:bg-gray-50 transition-all duration-300 h-full rounded-lg">
+					<Card className="bg-surface border border-border transition-all duration-300 h-full rounded-none">
 						<CardContent className="p-5 flex flex-col items-center justify-center text-center gap-3">
-							<div className="h-10 w-10 rounded-lg bg-black text-white flex items-center justify-center">
+							<div className="h-10 w-10 rounded-none bg-accent text-bg flex items-center justify-center">
 								<Key size={18} />
 							</div>
 							<form onSubmit={handleJoinRoomDirect} className="w-full flex flex-col items-center gap-2">
-								<h3 className="text-sm font-bold text-black">Join Session</h3>
+								<h3 className="text-sm font-bold text-text-primary">Join Session</h3>
 								<div className="flex w-full gap-2 mt-0.5">
 									<input
 										type="text"
@@ -168,13 +170,13 @@ export default function DashboardPage() {
 										value={joinRoomId}
 										onChange={(e) => setJoinRoomId(e.target.value)}
 										disabled={isJoining}
-										className="flex-1 px-3 py-1 bg-white border border-black rounded-lg text-xs focus:outline-none text-black font-bold placeholder:text-gray-500"
+										className="flex-1 px-3 py-1 bg-code-bg border border-border rounded-none text-xs focus:outline-none focus:border-accent text-text-primary font-bold placeholder:text-text-secondary"
 									/>
 									<Button 
 										type="submit" 
 										disabled={isJoining || !joinRoomId}
 										size="sm" 
-										className="bg-black hover:bg-gray-900 text-white font-bold h-6 text-xs px-3 rounded-lg transition-colors"
+										className="h-7 text-xs px-3 rounded-none transition-colors"
 									>
 										Join
 									</Button>
@@ -186,7 +188,7 @@ export default function DashboardPage() {
 
 				{/* Candidates Bubbles Row */}
 				<div className="space-y-3">
-					<h3 className="text-xs font-bold uppercase tracking-wider text-gray-600 px-1">
+					<h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary px-1">
 						Active Candidates
 					</h3>
 					<div className="flex items-center gap-4 overflow-x-auto py-2.5 px-1">
@@ -194,14 +196,14 @@ export default function DashboardPage() {
 							<div className="flex gap-4">
 								{[1, 2, 3].map((n) => (
 									<div key={n} className="flex flex-col items-center gap-1.5 animate-pulse">
-										<div className="h-12 w-12 rounded-lg bg-gray-300 border border-black"></div>
-										<div className="h-2 w-10 bg-gray-300 rounded"></div>
+										<div className="h-12 w-12 rounded-none bg-surface border border-border"></div>
+										<div className="h-2 w-10 bg-surface rounded-none"></div>
 									</div>
 								))}
 							</div>
 						) : uniqueCandidates.length === 0 ? (
-							<div className="text-gray-600 text-xs font-semibold italic py-2 px-1 flex items-center gap-1.5">
-								<ShieldAlert size={12} /> No candidate profiles yet.
+							<div className="text-text-secondary text-xs font-semibold italic py-2 px-1 flex items-center gap-1.5">
+								<ShieldAlert size={12} className="text-accent" /> No candidate profiles yet.
 							</div>
 						) : (
 							uniqueCandidates.map((c) => {
@@ -214,10 +216,10 @@ export default function DashboardPage() {
 										href={`/interview/${c.roomId}`} 
 										className="flex flex-col items-center text-center gap-2 group shrink-0"
 									>
-										<div className={`h-12 w-12 rounded-lg flex items-center justify-center font-bold text-sm border border-black transition-all duration-300 group-hover:scale-105 ${avatarStyle}`}>
+										<div className={`h-12 w-12 rounded-none flex items-center justify-center font-bold text-sm transition-all duration-300 group-hover:scale-105 ${avatarStyle}`}>
 											{initial}
 										</div>
-										<span className="text-xs font-bold text-gray-600 group-hover:text-black transition-colors max-w-[65px] truncate">
+										<span className="text-xs font-bold text-text-secondary group-hover:text-text-primary transition-colors max-w-[65px] truncate">
 											{name}
 										</span>
 									</Link>
@@ -229,18 +231,18 @@ export default function DashboardPage() {
 
 				{/* Recent Activity List */}
 				<div className="space-y-3">
-					<h3 className="text-xs font-bold uppercase tracking-wider text-gray-600 px-1">
+					<h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary px-1">
 						Session Activity
 					</h3>
-					<Card className="bg-white border border-black rounded-lg overflow-hidden">
-						<CardContent className="p-0 divide-y divide-black">
+					<Card className="bg-surface border border-border rounded-none overflow-hidden">
+						<CardContent className="p-0 divide-y divide-border">
 							{isLoading ? (
-								<div className="flex flex-col items-center justify-center py-16 gap-3 bg-gray-50">
-									<div className="animate-spin rounded-full h-7 w-7 border-t-2 border-b-2 border-black"></div>
-									<span className="text-xs text-gray-600 font-bold uppercase tracking-wider">Loading...</span>
+								<div className="flex flex-col items-center justify-center py-16 gap-3 bg-surface">
+									<div className="animate-spin rounded-none h-7 w-7 border-t-2 border-b-2 border-accent"></div>
+									<span className="text-xs text-text-secondary font-bold uppercase tracking-wider">Loading...</span>
 								</div>
 							) : filteredInterviews.length === 0 ? (
-								<div className="text-center py-16 text-gray-600 text-xs italic bg-gray-50">
+								<div className="text-center py-16 text-text-secondary text-xs italic bg-surface">
 									{searchQuery ? 'No interviews match your search' : 'No interview sessions recorded'}
 								</div>
 							) : (
@@ -253,17 +255,17 @@ export default function DashboardPage() {
 										<Link
 											key={interview.id}
 											href={`/interview/${interview.roomId}`}
-											className="flex items-center justify-between p-4 hover:bg-gray-50 transition-all duration-200 group"
+											className="flex items-center justify-between p-4 hover:bg-code-bg transition-all duration-200 group"
 										>
 											<div className="flex items-center gap-3">
-												<div className={`h-9 w-9 rounded-lg flex items-center justify-center font-bold text-xs border border-black shrink-0 ${avatarStyle}`}>
+												<div className={`h-9 w-9 rounded-none flex items-center justify-center font-bold text-xs shrink-0 ${avatarStyle}`}>
 													{initial}
 												</div>
 												<div>
-													<h4 className="text-sm font-bold text-black group-hover:text-gray-700 transition-colors">
+													<h4 className="text-sm font-bold text-text-primary group-hover:text-accent transition-colors">
 														{interview.title}
 													</h4>
-													<p className="text-xs text-gray-600 font-medium mt-0.5">
+													<p className="text-xs text-text-secondary mt-0.5">
 														{name}
 													</p>
 												</div>
@@ -271,20 +273,20 @@ export default function DashboardPage() {
 
 											<div className="flex items-center gap-3 text-right">
 												<div>
-													<span className="text-xs font-bold text-black block">
+													<span className="text-xs font-bold text-text-primary block">
 														{new Date(interview.scheduledAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
 													</span>
-													<span className={`text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-lg mt-0.5 inline-block border ${
+													<span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-none mt-1 inline-block border ${
 														interview.status === 'scheduled'
-															? 'bg-white text-black border-black'
+															? 'bg-code-bg text-text-primary border-border'
 															: interview.status === 'in-progress'
-															? 'bg-gray-800 text-white border-black animate-pulse'
-															: 'bg-gray-100 text-gray-700 border-black'
+															? 'bg-accent/10 text-accent border-accent/30 animate-pulse'
+															: 'bg-green-950/20 text-success border-success/30'
 													}`}>
 														{interview.status}
 													</span>
 												</div>
-												<ChevronRight size={16} className="text-gray-600 group-hover:text-black group-hover:translate-x-0.5 transition-all" />
+												<ChevronRight size={16} className="text-text-secondary group-hover:text-accent group-hover:translate-x-0.5 transition-all" />
 											</div>
 										</Link>
 									)

@@ -41,6 +41,7 @@ func AutoMigrate() error {
 		&models.InterviewRoom{},
 		&models.Feedback{},
 		&models.CodeSession{},
+		&models.WhiteboardSession{},
 	)
 }
 

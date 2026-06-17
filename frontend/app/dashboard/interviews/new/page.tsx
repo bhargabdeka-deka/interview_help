@@ -61,17 +61,17 @@ export default function NewInterviewPage() {
 	}
 
 	return (
-		<div className="min-h-screen bg-white text-black font-sans antialiased">
-			{/* Top Glass Header */}
-			<header className="bg-white border-b border-black sticky top-0 z-50">
+		<div className="min-h-screen bg-bg text-text-primary font-sans antialiased">
+			{/* Top Header */}
+			<header className="bg-surface border-b border-border sticky top-0 z-50">
 				<div className="max-w-xl mx-auto px-4 py-3 flex items-center justify-between">
 					<Link
 						href="/dashboard"
-						className="text-sm text-black hover:text-gray-700 font-bold flex items-center gap-1.5 transition-colors"
+						className="text-sm text-text-primary hover:text-accent font-bold flex items-center gap-1.5 transition-colors"
 					>
 						<ArrowLeft size={16} /> Back
 					</Link>
-					<span className="font-semibold text-black text-sm">
+					<span className="font-extrabold text-accent text-sm tracking-wide">
 						Schedule Interview
 					</span>
 					<div className="w-10"></div> {/* spacer */}
@@ -80,13 +80,13 @@ export default function NewInterviewPage() {
 
 			{/* Main Centered Container */}
 			<main className="max-w-xl mx-auto px-4 py-10">
-				<Card className="bg-white border border-black rounded-lg overflow-hidden">
+				<Card className="bg-surface border border-border rounded-none overflow-hidden shadow-2xl">
 					<CardContent className="p-6 space-y-6">
 						<div className="text-center space-y-1">
-							<h2 className="text-lg font-bold text-black">
+							<h2 className="text-xl font-bold text-text-primary">
 								Schedule New Interview
 							</h2>
-							<p className="text-sm text-gray-600">
+							<p className="text-sm text-text-secondary">
 								Set up a new interview session
 							</p>
 						</div>
@@ -94,7 +94,7 @@ export default function NewInterviewPage() {
 						<form onSubmit={handleSubmit} className="space-y-4">
 							{/* Interview Title */}
 							<div className="space-y-2">
-								<label className="text-sm font-bold text-black">
+								<label className="text-sm font-semibold text-text-primary">
 									Interview Title *
 								</label>
 								<Input
@@ -105,13 +105,12 @@ export default function NewInterviewPage() {
 									onChange={handleChange}
 									required
 									disabled={isLoading}
-									className="text-sm bg-white border border-black focus:border-black rounded-lg px-4 py-2 transition-all focus:outline-none text-black"
 								/>
 							</div>
 
 							{/* Description */}
 							<div className="space-y-2">
-								<label className="text-sm font-bold text-black">
+								<label className="text-sm font-semibold text-text-primary">
 									Assessment Description / Topics
 								</label>
 								<textarea
@@ -121,13 +120,13 @@ export default function NewInterviewPage() {
 									onChange={handleChange}
 									disabled={isLoading}
 									rows={3}
-									className="w-full text-sm bg-white border border-black focus:border-black rounded-lg p-3 transition-all focus:outline-none text-black placeholder:text-gray-500 leading-relaxed"
+									className="w-full text-sm bg-code-bg border border-border rounded-none p-3 transition-all focus:outline-none focus:ring-2 focus:ring-accent focus:ring-opacity-20 focus:border-accent text-text-primary placeholder:text-text-secondary leading-relaxed"
 								/>
 							</div>
 
 							{/* Candidate Email */}
 							<div className="space-y-2">
-								<label className="text-sm font-bold text-black">
+								<label className="text-sm font-semibold text-text-primary">
 									Candidate Email *
 								</label>
 								<Input
@@ -138,14 +137,13 @@ export default function NewInterviewPage() {
 									onChange={handleChange}
 									required
 									disabled={isLoading}
-									className="text-sm bg-white border border-black focus:border-black rounded-lg px-4 py-2 transition-all focus:outline-none text-black"
 								/>
 							</div>
 
 							{/* Date & Time / Duration Grid */}
 							<div className="grid grid-cols-2 gap-4">
 								<div className="space-y-2">
-									<label className="text-sm font-bold text-black">
+									<label className="text-sm font-semibold text-text-primary">
 										Date & Time *
 									</label>
 									<Input
@@ -155,12 +153,11 @@ export default function NewInterviewPage() {
 										onChange={handleChange}
 										required
 										disabled={isLoading}
-										className="text-sm bg-white border border-black focus:border-black rounded-lg px-4 py-2 transition-all focus:outline-none text-black"
 									/>
 								</div>
 
 								<div className="space-y-2">
-									<label className="text-sm font-bold text-black">
+									<label className="text-sm font-semibold text-text-primary">
 										Duration (minutes)
 									</label>
 									<Input
@@ -171,18 +168,17 @@ export default function NewInterviewPage() {
 										min="15"
 										max="480"
 										disabled={isLoading}
-										className="text-sm bg-white border border-black focus:border-black rounded-lg px-4 py-2 transition-all focus:outline-none text-black"
 									/>
 								</div>
 							</div>
 
 							{/* Buttons Grid */}
-							<div className="pt-4 flex items-center justify-end gap-3 border-t border-black mt-6">
+							<div className="pt-4 flex items-center justify-end gap-3 border-t border-border mt-6">
 								<Link href="/dashboard" className="w-1/2 sm:w-auto">
 									<Button
 										type="button"
 										variant="outline"
-										className="w-full border-black text-black hover:bg-gray-100 rounded-lg font-bold h-9 text-sm transition-colors"
+										className="w-full rounded-none font-bold h-9 text-sm transition-colors"
 									>
 										Cancel
 									</Button>
@@ -190,7 +186,7 @@ export default function NewInterviewPage() {
 								<Button
 									type="submit"
 									disabled={isLoading}
-									className="w-1/2 sm:w-auto bg-black hover:bg-gray-900 text-white font-bold rounded-lg h-9 text-sm transition-colors"
+									className="w-1/2 sm:w-auto font-bold rounded-none h-9 text-sm transition-colors"
 								>
 									{isLoading ? 'Creating...' : 'Schedule'}
 								</Button>
