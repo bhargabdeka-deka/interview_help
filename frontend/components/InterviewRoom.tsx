@@ -624,7 +624,7 @@ export function InterviewRoom({ roomId }: { roomId: string }) {
 					'Content-Type': 'application/json',
 					Authorization: `Bearer ${localStorage.getItem('token')}`,
 				},
-				body: JSON.stringify({ rating, notes }),
+				body: JSON.stringify({ status: 'completed', rating, comment: notes }),
 			})
 
 			if (!response.ok) {
