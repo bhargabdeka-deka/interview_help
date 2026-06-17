@@ -3,11 +3,10 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent } from '@/components/ui/card'
 import { useAuthStore } from '@/store/authStore'
 import toast from 'react-hot-toast'
+import { TerminalSquare } from 'lucide-react'
 
 export default function SignupPage() {
 	const [email, setEmail] = useState('')
@@ -40,20 +39,26 @@ export default function SignupPage() {
 	}
 
 	return (
-		<div className="min-h-screen flex items-center justify-center bg-white text-black font-sans antialiased px-4">
-			<Card className="w-full max-w-md bg-white border border-black shadow-lg rounded-lg">
-				<CardContent className="p-8 space-y-6">
-					<div className="text-center space-y-2">
-						<h2 className="text-2xl font-bold text-black">InterviewOS</h2>
-						<p className="text-sm text-gray-700">
-							Register to create an account
+		<div className="min-h-screen flex items-center justify-center bg-bg text-text-primary font-sans antialiased px-4 relative overflow-hidden py-12">
+			<div className="w-full max-w-md bg-surface-2 border border-border relative z-10 p-1">
+				{/* Top border accent line */}
+				<div className="h-1 w-full bg-accent absolute top-0 left-0" />
+				
+				<div className="bg-surface p-8 sm:p-10 space-y-8">
+					<div className="text-center space-y-3">
+						<div className="flex items-center justify-center gap-2 mb-4">
+							<TerminalSquare className="text-accent w-8 h-8" strokeWidth={2.5} />
+							<h2 className="text-3xl font-logo font-black text-text-primary tracking-tight">InterviewOS</h2>
+						</div>
+						<p className="text-sm text-text-secondary">
+							Register your organization workspace
 						</p>
 					</div>
 
-					<form onSubmit={handleSubmit} className="space-y-4">
+					<form onSubmit={handleSubmit} className="space-y-5">
 						{/* Full Name */}
 						<div className="space-y-2">
-							<label className="text-sm font-bold text-black block">
+							<label className="text-xs font-bold text-text-secondary uppercase tracking-wider block">
 								Full Name
 							</label>
 							<Input
@@ -63,13 +68,13 @@ export default function SignupPage() {
 								onChange={(e) => setName(e.target.value)}
 								required
 								disabled={isLoading}
-								className="text-sm bg-white border border-black focus:border-black rounded-lg px-4 py-2 transition-all focus:outline-none text-black"
+								className="h-12 bg-code-bg border-border focus:border-accent text-base"
 							/>
 						</div>
 
 						{/* Email Address */}
 						<div className="space-y-2">
-							<label className="text-sm font-bold text-black block">
+							<label className="text-xs font-bold text-text-secondary uppercase tracking-wider block">
 								Email Address
 							</label>
 							<Input
@@ -79,13 +84,13 @@ export default function SignupPage() {
 								onChange={(e) => setEmail(e.target.value)}
 								required
 								disabled={isLoading}
-								className="text-sm bg-white border border-black focus:border-black rounded-lg px-4 py-2 transition-all focus:outline-none text-black"
+								className="h-12 bg-code-bg border-border focus:border-accent text-base"
 							/>
 						</div>
 
 						{/* Password */}
 						<div className="space-y-2">
-							<label className="text-sm font-bold text-black block">
+							<label className="text-xs font-bold text-text-secondary uppercase tracking-wider block">
 								Password
 							</label>
 							<Input
@@ -95,13 +100,13 @@ export default function SignupPage() {
 								onChange={(e) => setPassword(e.target.value)}
 								required
 								disabled={isLoading}
-								className="text-sm bg-white border border-black focus:border-black rounded-lg px-4 py-2 transition-all focus:outline-none text-black"
+								className="h-12 bg-code-bg border-border focus:border-accent text-base"
 							/>
 						</div>
 
 						{/* Confirm Password */}
 						<div className="space-y-2">
-							<label className="text-sm font-bold text-black block">
+							<label className="text-xs font-bold text-text-secondary uppercase tracking-wider block">
 								Confirm Password
 							</label>
 							<Input
@@ -111,27 +116,27 @@ export default function SignupPage() {
 								onChange={(e) => setConfirmPassword(e.target.value)}
 								required
 								disabled={isLoading}
-								className="text-sm bg-white border border-black focus:border-black rounded-lg px-4 py-2 transition-all focus:outline-none text-black"
+								className="h-12 bg-code-bg border-border focus:border-accent text-base"
 							/>
 						</div>
 
-						<Button
+						<button
 							type="submit"
 							disabled={isLoading}
-							className="w-full bg-black text-white font-bold rounded-lg h-10 text-sm transition-colors mt-4"
+							className="w-full font-bold h-12 text-sm mt-8 bg-accent text-bg hover:bg-[#0d9b6c] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
 						>
-							{isLoading ? 'Creating account...' : 'Create Account'}
-						</Button>
+							{isLoading ? 'Creating workspace...' : 'Create Workspace'}
+						</button>
 					</form>
 
-					<div className="text-center text-sm text-gray-700 pt-2 border-t border-black">
+					<div className="text-center text-sm text-text-secondary pt-6 border-t border-border">
 						Already have an account?{' '}
-						<Link href="/login" className="text-black font-bold hover:underline transition-colors">
+						<Link href="/login" className="text-text-primary font-bold hover:text-accent transition-colors border-b border-transparent hover:border-accent">
 							Sign In
 						</Link>
 					</div>
-				</CardContent>
-			</Card>
+				</div>
+			</div>
 		</div>
 	)
 }

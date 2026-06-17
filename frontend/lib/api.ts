@@ -42,6 +42,13 @@ class APIClient {
     return data
   }
 
+  async guestRegister(name: string): Promise<AuthResponse> {
+    const { data } = await this.client.post('/api/auth/guest', {
+      name,
+    })
+    return data
+  }
+
   async logout(): Promise<void> {
     await this.client.post('/api/auth/logout')
   }

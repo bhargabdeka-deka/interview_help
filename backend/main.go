@@ -48,6 +48,7 @@ func main() {
 	authGroup := app.Group("/api/auth")
 	authGroup.Post("/register", handlers.Register)
 	authGroup.Post("/login", handlers.Login)
+	authGroup.Post("/guest", handlers.GuestRegister)
 	authGroup.Post("/logout", middleware.AuthMiddleware, handlers.Logout)
 	authGroup.Get("/me", middleware.AuthMiddleware, handlers.GetMe)
 

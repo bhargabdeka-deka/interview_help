@@ -113,3 +113,20 @@ func (c *CodeSession) BeforeCreate(tx *gorm.DB) error {
 	}
 	return nil
 }
+
+// WhiteboardSession represents a collaborative system design drawing session
+type WhiteboardSession struct {
+	ID          string    `gorm:"primaryKey" json:"id"`
+	InterviewID string    `json:"interviewId" gorm:"uniqueIndex"`
+	Data        string    `json:"data"` // JSON string representation of drawings
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
+}
+
+func (w *WhiteboardSession) BeforeCreate(tx *gorm.DB) error {
+	if w.ID == "" {
+		w.ID = uuid.New().String()
+	}
+	return nil
+}
+

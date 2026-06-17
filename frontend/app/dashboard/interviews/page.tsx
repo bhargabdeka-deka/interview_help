@@ -66,7 +66,7 @@ export default function InterviewsListPage() {
 						Session Logs
 					</span>
 					<Link href="/dashboard/interviews/new">
-						<Button className="bg-black hover:bg-gray-900 text-white text-sm font-bold h-8 px-4 rounded-lg flex items-center gap-1 transition-colors">
+						<Button className="bg-black hover:bg-gray-900 text-white text-sm font-bold h-8 px-4 rounded-none flex items-center gap-1 transition-colors">
 							<Plus size={16} /> Schedule
 						</Button>
 					</Link>
@@ -76,12 +76,12 @@ export default function InterviewsListPage() {
 			{/* Main Feed Container */}
 			<main className="max-w-2xl mx-auto px-4 py-8 space-y-5">
 				{/* Tab Filters */}
-				<div className="flex bg-white border border-black p-1 rounded-lg w-fit gap-1">
+				<div className="flex bg-white border border-black p-1 rounded-none w-fit gap-1">
 					{(['all', 'upcoming', 'completed'] as const).map((tab) => (
 						<button
 							key={tab}
 							onClick={() => setFilter(tab)}
-							className={`py-1 px-4 rounded-lg text-sm font-bold uppercase transition-all duration-250 ${
+							className={`py-1 px-4 rounded-none text-sm font-bold uppercase transition-all duration-250 ${
 								filter === tab
 									? 'bg-black text-white border border-black'
 									: 'text-gray-600 hover:text-black border border-transparent'
@@ -93,11 +93,11 @@ export default function InterviewsListPage() {
 				</div>
 
 				{/* History Feed List */}
-				<Card className="bg-white border border-black rounded-lg overflow-hidden">
+				<Card className="bg-white border border-black rounded-none overflow-hidden">
 					<CardContent className="p-0 divide-y divide-black">
 						{isLoading ? (
 							<div className="flex flex-col items-center justify-center py-16 gap-3 bg-gray-50">
-								<div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-black"></div>
+								<div className="animate-spin rounded-none h-6 w-6 border-t-2 border-b-2 border-black"></div>
 								<span className="text-sm text-gray-600 font-bold uppercase">Loading...</span>
 							</div>
 						) : filteredInterviews.length === 0 ? (
@@ -117,7 +117,7 @@ export default function InterviewsListPage() {
 										className="flex items-center justify-between p-4 hover:bg-gray-50 transition-all duration-200 group"
 									>
 										<div className="flex items-center gap-3">
-											<div className={`h-9 w-9 rounded-lg flex items-center justify-center font-bold text-sm border border-black shrink-0 ${avatarStyle}`}>
+											<div className={`h-9 w-9 rounded-none flex items-center justify-center font-bold text-sm border border-black shrink-0 ${avatarStyle}`}>
 												{initial}
 											</div>
 											<div>
@@ -135,7 +135,7 @@ export default function InterviewsListPage() {
 												<span className="text-xs font-bold text-black block">
 													{new Date(interview.scheduledAt).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
 												</span>
-												<span className={`text-xs font-bold uppercase px-2 py-0.5 rounded-lg mt-0.5 inline-block border ${
+												<span className={`text-xs font-bold uppercase px-2 py-0.5 rounded-none mt-0.5 inline-block border ${
 													interview.status === 'scheduled'
 														? 'bg-white text-black border-black'
 														: interview.status === 'in-progress'

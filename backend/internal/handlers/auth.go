@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"fmt"
 	"net/mail"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"interviewos/internal/db"
 	"interviewos/internal/models"
@@ -45,8 +47,37 @@ func Register(c *fiber.Ctx) error {
 	// Check if user exists
 	var existingUser models.User
 	if err := db.DB.Where("email = ?", req.Email).First(&existingUser).Error; err == nil {
-		return c.Status(fiber.StatusConflict).JSON(fiber.Map{
-			"message": "email already registered",
+		if existingUser.Password != "" {
+			return c.Status(fiber.StatusConflict).JSON(fiber.Map{
+				"message": "email already registered",
+			})
+		}
+		// Complete registration for placeholder user
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "failed to register user",
+			})
+		}
+		existingUser.Password = string(hashedPassword)
+		if req.Name != "" {
+			existingUser.Name = req.Name
+		}
+		if err := db.DB.Save(&existingUser).Error; err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "failed to register user",
+			})
+		}
+		token, err := utils.GenerateToken(&existingUser)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "failed to generate token",
+			})
+		}
+		existingUser.Password = ""
+		return c.Status(fiber.StatusCreated).JSON(AuthResponse{
+			Token: token,
+			User:  &existingUser,
 		})
 	}
 
@@ -149,4 +180,48 @@ func GetMe(c *fiber.Ctx) error {
 
 	user.Password = ""
 	return c.JSON(user)
+}
+
+type GuestRegisterRequest struct {
+	Name string `json:"name"`
+}
+
+func GuestRegister(c *fiber.Ctx) error {
+	var req GuestRegisterRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "invalid request body",
+		})
+	}
+
+	if req.Name == "" {
+		req.Name = "Guest Candidate"
+	}
+
+	// Create temporary guest user
+	guestEmail := fmt.Sprintf("guest-%s@interviewos.guest", uuid.New().String()[:8])
+	user := &models.User{
+		ID:    uuid.New().String(),
+		Email: guestEmail,
+		Name:  req.Name,
+		Role:  "candidate",
+	}
+
+	if err := db.DB.Create(user).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "failed to create guest user",
+		})
+	}
+
+	token, err := utils.GenerateToken(user)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "failed to generate token",
+		})
+	}
+
+	return c.JSON(AuthResponse{
+		Token: token,
+		User:  user,
+	})
 }
