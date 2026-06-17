@@ -79,7 +79,7 @@ export default function Home() {
                   <div className="text-accent mb-2">function twoSum(nums, target) {'{'}</div>
                   <div className="text-text-primary ml-4 mb-2">const map = new Map();</div>
                   <div className="text-text-primary ml-4 mb-2">for (let i = 0; i {'<'} nums.length; i++) {'{'}</div>
-                  <div className="text-text-secondary ml-8 mb-2">// Find complement</div>
+                  <div className="text-text-secondary ml-8 mb-2">{`// Find complement`}</div>
                   <div className="text-text-primary ml-8 mb-2">const comp = target - nums[i];</div>
                   <div className="text-text-primary ml-8 mb-2">if (map.has(comp)) return [map.get(comp), i];</div>
                   <div className="text-text-primary ml-8 mb-2">map.set(nums[i], i);</div>
@@ -153,7 +153,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-surface-3/30" />
           <div className="container relative z-10 text-center">
             <h2 className="text-5xl font-display font-bold text-text-primary mb-6">Ready to upgrade your hiring?</h2>
-            <p className="text-xl text-text-secondary mb-10 max-w-2xl mx-auto">Join hundreds of top engineering teams using InterviewOS to identify the world's best talent.</p>
+            <p className="text-xl text-text-secondary mb-10 max-w-2xl mx-auto">Join hundreds of top engineering teams using InterviewOS to identify the world&apos;s best talent.</p>
             <Link href="/signup">
               <button className="px-10 py-5 text-xl font-bold text-bg bg-accent hover:bg-[#0d9b6c] transition-all transform hover:-translate-y-1">
                 Create Your Workspace
