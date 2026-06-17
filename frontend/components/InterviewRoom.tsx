@@ -618,7 +618,7 @@ export function InterviewRoom({ roomId }: { roomId: string }) {
 	const handleSubmitEvaluation = async () => {
 		setIsSavingNotes(true)
 		try {
-			const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/interviews/${roomId}/evaluation`, {
+			const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/interviews/${interviewId}/evaluation`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
