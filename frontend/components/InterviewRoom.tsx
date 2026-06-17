@@ -156,7 +156,6 @@ export function InterviewRoom({ roomId }: { roomId: string }) {
 				// Save active room in local storage
 				localStorage.setItem('active_interview_room_id', roomId)
 				
-				// Now fetch the interview details
 				const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/interviews/${fetchedInterviewId}`, {
 					headers: {
 						'Content-Type': 'application/json',
@@ -168,6 +167,13 @@ export function InterviewRoom({ roomId }: { roomId: string }) {
 					const type = data.type || 'coding'
 					setInterviewType(type)
 					setActiveTab(type === 'system-design' ? 'whiteboard' : 'editor')
+
+					// Dynamic Host Verification
+					const isActualHost = data.hostId === user.id || data.host_id === user.id || data.HostID === user.id
+					if (isActualHost) {
+						setIsInterviewer(true)
+						setLobbyStatus('approved')
+					}
 				} else {
 					console.warn('Failed to fetch interview details', res.status)
 				}

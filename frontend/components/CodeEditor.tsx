@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import Editor from '@monaco-editor/react'
 import { Button } from '@/components/ui/button'
-import { Play, Settings, FileText, Lock, ClipboardList } from 'lucide-react'
+import { Play, Settings, FileText, Lock, ClipboardList, Copy } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 interface CodeEditorProps {
@@ -105,9 +105,21 @@ export function CodeEditor({
 		<div className="flex flex-col h-full bg-code-bg text-white overflow-hidden border border-border rounded-none">
 			{/* IDE Header Bar (CoderPad Style) */}
 			<div className="flex items-center justify-between px-4 py-2 bg-surface-2 border-b border-border">
-				<span className="text-xs font-bold text-slate-200">
-					Interview with {candidateName}
-				</span>
+				<div className="flex items-center gap-2">
+					<span className="text-xs font-bold text-slate-200">
+						Interview with {candidateName}
+					</span>
+					<button
+						onClick={() => {
+							navigator.clipboard.writeText(candidateName);
+							toast.success('ID copied to clipboard!');
+						}}
+						className="text-slate-400 hover:text-accent transition-colors"
+						title="Copy ID"
+					>
+						<Copy size={13} />
+					</button>
+				</div>
 
 				<div className="flex items-center gap-2 relative">
 					<button

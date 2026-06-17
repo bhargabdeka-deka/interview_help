@@ -206,8 +206,8 @@ func WebSocketHandler(c *websocket.Conn) {
 			RoomHub.ForwardMessage(roomId, msg.TargetID, msg)
 
 		case "chat-sync":
-			// Broadcast chat message to all peers in the room
-			RoomHub.BroadcastMessage(roomId, msg)
+			// Broadcast chat message to other peers in the room
+			RoomHub.BroadcastMessageExcept(roomId, userId, msg)
 
 		case "code-sync":
 			// Persist code session

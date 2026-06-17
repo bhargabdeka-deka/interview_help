@@ -70,6 +70,7 @@ export default function DashboardPage() {
 		if (!joinRoomId.trim()) return
 		setIsJoining(true)
 		router.push(`/interview/${joinRoomId.trim()}`)
+		setTimeout(() => setIsJoining(false), 1000)
 	}
 
 	// Filter based on search query
