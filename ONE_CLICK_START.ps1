@@ -38,7 +38,7 @@ if (-not $dockerRunning) {
     exit 1
 }
 
-Write-Host "✅ Docker is running" -ForegroundColor Green
+Write-Host "[OK] Docker is running" -ForegroundColor Green
 
 # ===== START DOCKER CONTAINERS =====
 Write-Host ""
@@ -51,12 +51,12 @@ Write-Host ""
 docker compose -f docker-compose.prod.yml up --build -d
 
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "❌ ERROR: Failed to start Docker containers" -ForegroundColor Red
+    Write-Host "[ERROR] Failed to start Docker containers" -ForegroundColor Red
     Read-Host "Press Enter to exit"
     exit 1
 }
 
-Write-Host "✅ Docker services started" -ForegroundColor Green
+Write-Host "[OK] Docker services started" -ForegroundColor Green
 Write-Host "   - Frontend:  http://localhost:3000" -ForegroundColor Cyan
 Write-Host "   - Backend:   http://localhost:8080" -ForegroundColor Cyan
 Write-Host ""
@@ -93,14 +93,14 @@ Write-Host "   Electron window started (PID: $($electronJob.Id))" -ForegroundCol
 Clear-Host
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Green
-Write-Host "   ✅ INTERVIEWOS IS RUNNING!" -ForegroundColor Green
+Write-Host "   [OK] INTERVIEWOS IS RUNNING!" -ForegroundColor Green
 Write-Host "============================================================" -ForegroundColor Green
 Write-Host ""
-Write-Host "🌐 Frontend:  http://localhost:3000" -ForegroundColor Cyan
-Write-Host "🔌 Backend:   http://localhost:8080" -ForegroundColor Cyan
-Write-Host "🖥️  Electron:  Desktop window (should appear)" -ForegroundColor Cyan
-Write-Host "🗄️  Database:  PostgreSQL (internal)" -ForegroundColor Cyan
-Write-Host "💾 Cache:     Redis (internal)" -ForegroundColor Cyan
+Write-Host "[Frontend]  http://localhost:3000" -ForegroundColor Cyan
+Write-Host "[Backend]   http://localhost:8080" -ForegroundColor Cyan
+Write-Host "[Electron]  Desktop window (should appear)" -ForegroundColor Cyan
+Write-Host "[Database]  PostgreSQL (internal)" -ForegroundColor Cyan
+Write-Host "[Cache]     Redis (internal)" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Green
 Write-Host "   COMMANDS:" -ForegroundColor Yellow

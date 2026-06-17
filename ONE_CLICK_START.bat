@@ -37,7 +37,7 @@ if errorlevel 1 (
     pause
     exit /b 1
 )
-echo ✅ Docker is running
+echo [OK] Docker is running
 
 REM ===== START DOCKER CONTAINERS =====
 echo.
@@ -51,13 +51,13 @@ docker compose -f docker-compose.prod.yml up --build -d >nul 2>&1
 
 if errorlevel 1 (
     color 0C
-    echo ❌ ERROR: Failed to start Docker containers
+    echo [ERROR] Failed to start Docker containers
     color 0A
     pause
     exit /b 1
 )
 
-echo ✅ Docker services started
+echo [OK] Docker services started
 echo   - Frontend:  http://localhost:3000
 echo   - Backend:   http://localhost:8080
 echo.
@@ -93,14 +93,14 @@ cls
 color 0B
 echo.
 echo ============================================================
-echo   ✅ INTERVIEWOS IS RUNNING!
+echo   [OK] INTERVIEWOS IS RUNNING!
 echo ============================================================
 echo.
-echo 🌐 Frontend:  http://localhost:3000
-echo 🔌 Backend:   http://localhost:8080
-echo 🖥️  Electron:  Desktop window (should appear)
-echo 🗄️  Database:  PostgreSQL (internal)
-echo 💾 Cache:     Redis (internal)
+echo [Frontend]  http://localhost:3000
+echo [Backend]   http://localhost:8080
+echo [Electron]  Desktop window (should appear)
+echo [Database]  PostgreSQL (internal)
+echo [Cache]     Redis (internal)
 echo.
 echo ============================================================
 echo   COMMANDS:
